@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ロト6 予想ツール</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #F7F6FB;
+    --card:       #FFFFFF;
+    --border:     #E7E4F0;
+    --text:       #3A3945;
+    --text-muted: #8D8A99;
+    --text-faint: #C3C0CB;
+
+    --blue:       #A9CCEB;
+    --blue-deep:  #4C7CA8;
+    --blue-light: #EBF3FB;
+
+    --pink:       #F2B7C2;
+    --pink-deep:  #B15E71;
+    --pink-light: #FCEEF2;
+
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+
+  body {
+    font-family: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  header {
+    max-width: 720px; margin: 0 auto 1.5rem;
+    background: linear-gradient(135deg, var(--blue-light), var(--pink-light));
+    border-radius: var(--radius);
+    padding: 1.75rem 1.5rem;
+    text-align: center;
+  }
+  header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
+  header p { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+
+  .container { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.35rem 1.5rem;
+  }
+
+  .card-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    color: var(--text-muted); text-transform: uppercase; margin-bottom: 1.1rem;
+  }
+
+  /* Number grids, grouped by decade */
+  .num-row { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
+  .num-row:last-child { margin-bottom: 0; }
+  .num-row-label {
+    width: 44px; flex-shrink: 0;
+    font-size: 11px; font-weight: 700; color: var(--text-faint);
+  }
+  .num-row-nums { display: flex; flex-wrap: wrap; gap: 7px; flex: 1; }
+
+  .num-btn {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 1.5px solid var(--border); background: var(--card);
+    color: var(--text); font-size: 13px; font-weight: 500;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.08s;
+    user-select: none;
+  }
+  .num-btn:hover { background: var(--bg); transform: scale(1.06); }
+  .num-btn:active { transform: scale(0.95); }
+  .num-btn.selected-fixed { background: var(--blue); border-color: var(--blue); color: var(--blue-deep); font-weight: 700; }
+  .num-btn.selected-banned { background: var(--pink); border-color: var(--pink); color: var(--pink-deep); font-weight: 700; }
+  .num-btn.disabled-btn { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; min-height: 26px; }
+  .chip { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
+  .chip-fixed { background: var(--blue-light); color: var(--blue-deep); }
+  .chip-banned { background: var(--pink-light); color: var(--pink-deep); }
+  .chip-none { font-size: 12px; color: var(--text-faint); }
+
+  /* Condition rows */
+  .cond-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cond-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .cond-row:first-child { padding-top: 0; }
+
+  /* Toggle switch */
+  .toggle-wrap { flex-shrink: 0; }
+  .toggle {
+    position: relative; display: inline-block;
+    width: 36px; height: 20px; cursor: pointer;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle-track {
+    position: absolute; inset: 0;
+    background: var(--border); border-radius: 20px;
+    transition: background 0.2s;
+  }
+  .toggle input:checked ~ .toggle-track { background: var(--blue); }
+  .toggle-thumb {
+    position: absolute; top: 3px; left: 3px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #fff; transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  }
+  .toggle input:checked ~ .toggle-thumb { transform: translateX(16px); }
+
+  .cond-label {
+    font-size: 13px; color: var(--text); font-weight: 500;
+    min-width: 160px; flex-shrink: 0;
+  }
+  .cond-label.off { color: var(--text-faint); }
+
+  .cond-controls { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .cond-controls.off { opacity: 0.4; pointer-events: none; }
+
+  .range-row { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .range-row input[type=range] { flex: 1; accent-color: var(--blue-deep); cursor: pointer; }
+  .range-val { min-width: 20px; text-align: right; font-size: 14px; font-weight: 700; }
+
+  .sum-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sum-row input[type=number] {
+    width: 70px; padding: 5px 8px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--bg); color: var(--text);
+    font-size: 14px; font-weight: 500; text-align: center;
+  }
+  .sum-row input[type=number]:focus { outline: 2px solid var(--blue); border-color: var(--blue-deep); }
+  .sep { font-size: 13px; color: var(--text-muted); }
+
+  /* Checkbox row (consecutive) */
+  .check-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .check-label {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 13px; cursor: pointer; user-select: none;
+    color: var(--text-muted);
+  }
+  .check-label input[type=checkbox] {
+    width: 16px; height: 16px; accent-color: var(--blue-deep); cursor: pointer;
+  }
+  .check-label span { font-weight: 500; }
+
+  /* Generate */
+  .gen-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .set-select {
+    padding: 10px 14px; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); background: var(--bg);
+    color: var(--text); font-size: 14px; cursor: pointer;
+  }
+  .gen-btn {
+    flex: 1; padding: 12px 24px; background: var(--blue-deep);
+    color: #fff; border: none; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    letter-spacing: 0.02em; transition: background 0.12s, transform 0.08s;
+  }
+  .gen-btn:hover { background: #3E6A91; }
+  .gen-btn:active { transform: scale(0.98); }
+  .reset-link {
+    font-size: 12px; color: var(--text-faint); background: none; border: none;
+    cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+    padding: 0; white-space: nowrap;
+  }
+  .reset-link:hover { color: var(--text-muted); }
+
+  /* Results */
+  #resultArea { display: none; }
+  #resultArea.show { display: block; }
+  .result-header {
+    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    color: var(--text-muted); text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .result-set { margin-bottom: 1.25rem; }
+  .result-set:last-child { margin-bottom: 0; }
+  .set-label { font-size: 11px; color: var(--text-faint); margin-bottom: 8px; font-weight: 600; }
+  .result-nums { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .rn {
+    width: 42px; height: 42px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700;
+  }
+  .rn-normal { background: var(--bg); border: 1.5px solid var(--border); color: var(--text); }
+  .rn-fixed { background: var(--blue); color: var(--blue-deep); border: 1.5px solid var(--blue); }
+  .meta-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .meta-chip {
+    font-size: 11px; color: var(--text-muted); background: var(--bg);
+    border: 1px solid var(--border); padding: 2px 9px; border-radius: 20px;
+  }
+  .divider { height: 1px; background: var(--border); margin: 1rem 0; }
+  .err { font-size: 13px; color: var(--pink-deep); padding: 10px 0; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>ロト6 予想ツール</h1>
+  <p>条件を設定して、予想番号を生成します</p>
+</header>
+
+<div class="container">
+
+  <!-- Fixed numbers -->
+  <div class="card">
+    <div class="card-title">固定数字 — 必ず含める</div>
+    <div class="num-grid" id="fixedGrid"></div>
+    <div class="chip-row" id="fixedChips"><span class="chip-none">未選択</span></div>
+  </div>
+
+  <!-- Banned numbers -->
+  <div class="card">
+    <div class="card-title">禁止数字 — 除外する</div>
+    <div class="num-grid" id="bannedGrid"></div>
+    <div class="chip-row" id="bannedChips"><span class="chip-none">未選択</span></div>
+  </div>
+
+  <!-- Conditions -->
+  <div class="card">
+    <div class="card-title">当選条件</div>
+
+    <!-- Front count -->
+    <div class="cond-row">
+      <div class="toggle-wrap">
+        <label class="toggle">
+          <input type="checkbox" id="useFront" onchange="toggleCond('front')">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+      <span class="cond-label off" id="labelFront">前半（1〜21）の個数</span>
+      <div class="cond-controls off" id="ctrlFront">
+        <div class="range-row">
+          <input type="range" min="0" max="6" step="1" value="3" id="frontCount"
+            oninput="document.getElementById('frontVal').textContent=this.value">
+          <span class="range-val" id="frontVal">3</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Odd count -->
+    <div class="cond-row">
+      <div class="toggle-wrap">
+        <label class="toggle">
+          <input type="checkbox" id="useOdd" onchange="toggleCond('odd')">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+      <span class="cond-label off" id="labelOdd">奇数の個数</span>
+      <div class="cond-controls off" id="ctrlOdd">
+        <div class="range-row">
+          <input type="range" min="0" max="6" step="1" value="3" id="oddCount"
+            oninput="document.getElementById('oddVal').textContent=this.value">
+          <span class="range-val" id="oddVal">3</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sum range -->
+    <div class="cond-row">
+      <div class="toggle-wrap">
+        <label class="toggle">
+          <input type="checkbox" id="useSum" onchange="toggleCond('sum')">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+      <span class="cond-label off" id="labelSum">合計値の範囲</span>
+      <div class="cond-controls off" id="ctrlSum">
+        <div class="sum-row">
+          <input type="number" id="sumMin" value="70" min="21" max="258">
+          <span class="sep">〜</span>
+          <input type="number" id="sumMax" value="180" min="21" max="258">
+        </div>
+      </div>
+    </div>
+
+    <!-- Consecutive numbers -->
+    <div class="cond-row">
+      <div class="toggle-wrap">
+        <label class="toggle">
+          <input type="checkbox" id="useConsec" onchange="toggleCond('consec')">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+      <span class="cond-label off" id="labelConsec">連続数字</span>
+      <div class="cond-controls off" id="ctrlConsec">
+        <div class="check-group">
+          <label class="check-label">
+            <input type="checkbox" id="allowConsec" checked>
+            <span>連続数字を含める</span>
+          </label>
+          <label class="check-label">
+            <input type="checkbox" id="requireConsec">
+            <span>必ず1ペア含める</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Generate -->
+  <div class="card">
+    <div class="gen-row">
+      <select class="set-select" id="setCount">
+        <option value="1">1セット</option>
+        <option value="3">3セット</option>
+        <option value="5" selected>5セット</option>
+        <option value="10">10セット</option>
+      </select>
+      <button class="gen-btn" onclick="generate()">予想を生成</button>
+      <button class="reset-link" onclick="resetAll()">全リセット</button>
+    </div>
+  </div>
+
+  <!-- Results -->
+  <div class="card" id="resultArea">
+    <div class="result-header">予想結果</div>
+    <div id="resultBody"></div>
+  </div>
+
+</div>
+
+<script>
+  const fixedState = new Set();
+  const bannedState = new Set();
+  const NUM_GROUPS = [[1, 9], [10, 19], [20, 29], [30, 39], [40, 43]];
+
+  function initGrid(gridId, stateSet, chipId, cls) {
+    const g = document.getElementById(gridId);
+    NUM_GROUPS.forEach(([start, end]) => {
+      const row = document.createElement('div');
+      row.className = 'num-row';
+
+      const label = document.createElement('span');
+      label.className = 'num-row-label';
+      label.textContent = start + (end > start ? '–' + end : '');
+      row.appendChild(label);
+
+      const nums = document.createElement('div');
+      nums.className = 'num-row-nums';
+      for (let i = start; i <= end; i++) {
+        const b = document.createElement('button');
+        b.className = 'num-btn';
+        b.textContent = i;
+        b.id = gridId + '_' + i;
+        b.addEventListener('click', () => {
+          if (stateSet.has(i)) {
+            stateSet.delete(i);
+          } else {
+            stateSet.add(i);
+          }
+          syncDisabled();
+          updateChips(chipId, stateSet, cls === 'selected-fixed' ? 'chip-fixed' : 'chip-banned');
+        });
+        nums.appendChild(b);
+      }
+      row.appendChild(nums);
+      g.appendChild(row);
+    });
+  }
+
+  function syncDisabled() {
+    for (let i = 1; i <= 43; i++) {
+      const fb = document.getElementById('fixedGrid_' + i);
+      const bb = document.getElementById('bannedGrid_' + i);
+      if (bannedState.has(i)) {
+        fb.className = 'num-btn disabled-btn';
+      } else if (fixedState.has(i)) {
+        fb.className = 'num-btn selected-fixed';
+      } else {
+        fb.className = 'num-btn';
+      }
+      if (fixedState.has(i)) {
+        bb.className = 'num-btn disabled-btn';
+      } else if (bannedState.has(i)) {
+        bb.className = 'num-btn selected-banned';
+      } else {
+        bb.className = 'num-btn';
+      }
+    }
+  }
+
+  function updateChips(chipId, stateSet, chipClass) {
+    const el = document.getElementById(chipId);
+    const arr = Array.from(stateSet).sort((a, b) => a - b);
+    el.innerHTML = arr.length === 0
+      ? '<span class="chip-none">未選択</span>'
+      : arr.map(n => `<span class="chip ${chipClass}">${n}</span>`).join('');
+  }
+
+  function toggleCond(key) {
+    const map = { front: 'useFront', odd: 'useOdd', sum: 'useSum', consec: 'useConsec' };
+    const checked = document.getElementById(map[key]).checked;
+    const ctrl = document.getElementById('ctrl' + key.charAt(0).toUpperCase() + key.slice(1));
+    const label = document.getElementById('label' + key.charAt(0).toUpperCase() + key.slice(1));
+    ctrl.classList.toggle('off', !checked);
+    label.classList.toggle('off', !checked);
+  }
+
+  function resetAll() {
+    fixedState.clear(); bannedState.clear();
+    syncDisabled();
+    updateChips('fixedChips', fixedState, 'chip-fixed');
+    updateChips('bannedChips', bannedState, 'chip-banned');
+    document.getElementById('useFront').checked = false;
+    document.getElementById('useOdd').checked = false;
+    document.getElementById('useSum').checked = false;
+    document.getElementById('useConsec').checked = false;
+    document.getElementById('allowConsec').checked = true;
+    document.getElementById('requireConsec').checked = false;
+    document.getElementById('frontCount').value = 3;
+    document.getElementById('frontVal').textContent = '3';
+    document.getElementById('oddCount').value = 3;
+    document.getElementById('oddVal').textContent = '3';
+    document.getElementById('sumMin').value = 70;
+    document.getElementById('sumMax').value = 180;
+    document.getElementById('setCount').value = 5;
+    ['Front','Odd','Sum','Consec'].forEach(k => {
+      document.getElementById('ctrl' + k).classList.add('off');
+      document.getElementById('label' + k).classList.add('off');
+    });
+    document.getElementById('resultArea').classList.remove('show');
+  }
+
+  function hasConsecutive(arr) {
+    for (let i = 0; i < arr.length - 1; i++) {
+      if (arr[i + 1] - arr[i] === 1) return true;
+    }
+    return false;
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function generate() {
+    const fixed = Array.from(fixedState);
+    const banned = Array.from(bannedState);
+    const useFront = document.getElementById('useFront').checked;
+    const useOdd   = document.getElementById('useOdd').checked;
+    const useSum   = document.getElementById('useSum').checked;
+    const useConsec = document.getElementById('useConsec').checked;
+    const front = parseInt(document.getElementById('frontCount').value);
+    const odd   = parseInt(document.getElementById('oddCount').value);
+    const sumMin = parseInt(document.getElementById('sumMin').value);
+    const sumMax = parseInt(document.getElementById('sumMax').value);
+    const allowConsec   = document.getElementById('allowConsec').checked;
+    const requireConsec = document.getElementById('requireConsec').checked;
+    const sets = parseInt(document.getElementById('setCount').value);
+
+    if (fixed.length > 6) { showErr('固定数字は6個以内にしてください。'); return; }
+    if (useSum && sumMin > sumMax) { showErr('合計値の最小が最大を超えています。'); return; }
+
+    const pool = [];
+    for (let i = 1; i <= 43; i++) {
+      if (!banned.includes(i) && !fixed.includes(i)) pool.push(i);
+    }
+
+    const results = [];
+    let attempts = 0;
+    while (results.length < sets && attempts < 150000) {
+      attempts++;
+      const need = 6 - fixed.length;
+      const shuffled = shuffle([...pool]);
+      const chosen = shuffled.slice(0, need);
+      const combo = [...fixed, ...chosen].sort((a, b) => a - b);
+
+      if (useFront) {
+        const frontCnt = combo.filter(n => n <= 21).length;
+        if (frontCnt !== front) continue;
+      }
+      if (useOdd) {
+        const oddCnt = combo.filter(n => n % 2 === 1).length;
+        if (oddCnt !== odd) continue;
+      }
+      if (useSum) {
+        const sum = combo.reduce((a, b) => a + b, 0);
+        if (sum < sumMin || sum > sumMax) continue;
+      }
+      if (useConsec) {
+        const consec = hasConsecutive(combo);
+        if (!allowConsec && consec) continue;
+        if (requireConsec && !consec) continue;
+      }
+
+      const key = combo.join(',');
+      if (results.find(r => r.key === key)) continue;
+
+      const frontCnt = combo.filter(n => n <= 21).length;
+      const oddCnt   = combo.filter(n => n % 2 === 1).length;
+      const sum      = combo.reduce((a, b) => a + b, 0);
+      const consec   = hasConsecutive(combo);
+      results.push({ nums: combo, sum, frontCnt, oddCnt, consec, key });
+    }
+
+    const area = document.getElementById('resultArea');
+    const body = document.getElementById('resultBody');
+    area.classList.add('show');
+
+    if (results.length === 0) {
+      body.innerHTML = '<div class="err">条件に合う組み合わせが見つかりませんでした。<br>条件を少し緩めてみてください。</div>';
+      return;
+    }
+
+    body.innerHTML = results.map((r, i) => {
+      const numsHtml = r.nums.map(n =>
+        `<div class="rn ${fixed.includes(n) ? 'rn-fixed' : 'rn-normal'}">${n}</div>`
+      ).join('');
+      const div = (i < results.length - 1) ? '<div class="divider"></div>' : '';
+      const consecChip = r.consec
+        ? '<span class="meta-chip" style="color:var(--blue-deep);">連続あり</span>'
+        : '<span class="meta-chip">連続なし</span>';
+      return `<div class="result-set">
+        <div class="set-label">セット ${i + 1}</div>
+        <div class="result-nums">${numsHtml}</div>
+        <div class="meta-row">
+          <span class="meta-chip">合計 ${r.sum}</span>
+          <span class="meta-chip">前半 ${r.frontCnt} / 後半 ${6 - r.frontCnt}</span>
+          <span class="meta-chip">奇数 ${r.oddCnt} / 偶数 ${6 - r.oddCnt}</span>
+          ${consecChip}
+        </div>
+      </div>${div}`;
+    }).join('');
+  }
+
+  function showErr(msg) {
+    document.getElementById('resultArea').classList.add('show');
+    document.getElementById('resultBody').innerHTML = `<div class="err">${msg}</div>`;
+  }
+
+  initGrid('fixedGrid', fixedState, 'fixedChips', 'selected-fixed');
+  initGrid('bannedGrid', bannedState, 'bannedChips', 'selected-banned');
+</script>
+</body>
+</html>
