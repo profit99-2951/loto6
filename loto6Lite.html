@@ -4,88 +4,82 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ロト6 予想ツール</title>
+
+<!-- Google tag (gtag.js) : ロト6データラボ アクセス解析 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-91G6P796K2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-91G6P796K2');
+</script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg:         #F7F6FB;
-    --card:       #FFFFFF;
-    --border:     #E7E4F0;
-    --text:       #3A3945;
-    --text-muted: #8D8A99;
-    --text-faint: #C3C0CB;
-
-    --blue:       #A9CCEB;
-    --blue-deep:  #4C7CA8;
-    --blue-light: #EBF3FB;
-
-    --pink:       #F2B7C2;
-    --pink-deep:  #B15E71;
-    --pink-light: #FCEEF2;
-
-    --radius: 16px;
-    --radius-sm: 10px;
+    --bg: #F8F7F4;
+    --surface: #FFFFFF;
+    --surface2: #F2F1EE;
+    --border: #E4E2DC;
+    --text: #1A1917;
+    --text-muted: #7A7870;
+    --text-faint: #B0AEA8;
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --blue-mid: #B5D4F4;
+    --red: #A32D2D;
+    --red-light: #FCEBEB;
+    --radius: 10px;
+    --radius-sm: 6px;
   }
 
   body {
-    font-family: 'Zen Kaku Gothic New', 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
     background: var(--bg);
     color: var(--text);
     min-height: 100vh;
     padding: 2rem 1rem 4rem;
   }
 
-  header {
-    max-width: 720px; margin: 0 auto 1.5rem;
-    background: linear-gradient(135deg, var(--blue-light), var(--pink-light));
-    border-radius: var(--radius);
-    padding: 1.75rem 1.5rem;
-    text-align: center;
-  }
-  header h1 { font-size: 24px; font-weight: 700; letter-spacing: -0.3px; color: var(--text); }
-  header p { font-size: 13px; color: var(--text-muted); margin-top: 6px; }
+  header { text-align: center; margin-bottom: 2.5rem; }
+  header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
 
   .container { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
 
   .card {
-    background: var(--card);
+    background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 1.35rem 1.5rem;
+    padding: 1.25rem 1.5rem;
   }
 
   .card-title {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
-    color: var(--text-muted); text-transform: uppercase; margin-bottom: 1.1rem;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--text-muted); text-transform: uppercase; margin-bottom: 1rem;
   }
 
-  /* Number grids, grouped by decade */
-  .num-row { display: flex; align-items: center; gap: 12px; margin-bottom: 9px; }
-  .num-row:last-child { margin-bottom: 0; }
-  .num-row-label {
-    width: 44px; flex-shrink: 0;
-    font-size: 11px; font-weight: 700; color: var(--text-faint);
-  }
-  .num-row-nums { display: flex; flex-wrap: wrap; gap: 7px; flex: 1; }
+  /* Number grids */
+  .num-grid { display: flex; flex-wrap: wrap; gap: 7px; }
 
   .num-btn {
-    width: 36px; height: 36px; border-radius: 50%;
-    border: 1.5px solid var(--border); background: var(--card);
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--surface2);
     color: var(--text); font-size: 13px; font-weight: 500;
     cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.08s;
+    transition: background 0.1s, border-color 0.1s, color 0.1s, transform 0.08s;
     user-select: none;
   }
-  .num-btn:hover { background: var(--bg); transform: scale(1.06); }
-  .num-btn:active { transform: scale(0.95); }
-  .num-btn.selected-fixed { background: var(--blue); border-color: var(--blue); color: var(--blue-deep); font-weight: 700; }
-  .num-btn.selected-banned { background: var(--pink); border-color: var(--pink); color: var(--pink-deep); font-weight: 700; }
-  .num-btn.disabled-btn { opacity: 0.3; cursor: not-allowed; pointer-events: none; }
+  .num-btn:hover { background: #ECEAE5; transform: scale(1.05); }
+  .num-btn:active { transform: scale(0.96); }
+  .num-btn.selected-fixed { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
+  .num-btn.selected-banned { background: var(--red); border-color: var(--red); color: #fff; font-weight: 600; }
+  .num-btn.disabled-btn { opacity: 0.28; cursor: not-allowed; pointer-events: none; }
 
-  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; min-height: 26px; }
-  .chip { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 600; }
-  .chip-fixed { background: var(--blue-light); color: var(--blue-deep); }
-  .chip-banned { background: var(--pink-light); color: var(--pink-deep); }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; min-height: 26px; }
+  .chip { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .chip-fixed { background: var(--blue-light); color: var(--blue); }
+  .chip-banned { background: var(--red-light); color: var(--red); }
   .chip-none { font-size: 12px; color: var(--text-faint); }
 
   /* Condition rows */
@@ -114,7 +108,7 @@
     position: absolute; top: 3px; left: 3px;
     width: 14px; height: 14px; border-radius: 50%;
     background: #fff; transition: transform 0.2s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
   }
   .toggle input:checked ~ .toggle-thumb { transform: translateX(16px); }
 
@@ -125,20 +119,20 @@
   .cond-label.off { color: var(--text-faint); }
 
   .cond-controls { display: flex; align-items: center; gap: 8px; flex: 1; }
-  .cond-controls.off { opacity: 0.4; pointer-events: none; }
+  .cond-controls.off { opacity: 0.35; pointer-events: none; }
 
   .range-row { display: flex; align-items: center; gap: 8px; flex: 1; }
-  .range-row input[type=range] { flex: 1; accent-color: var(--blue-deep); cursor: pointer; }
-  .range-val { min-width: 20px; text-align: right; font-size: 14px; font-weight: 700; }
+  .range-row input[type=range] { flex: 1; accent-color: var(--blue); cursor: pointer; }
+  .range-val { min-width: 20px; text-align: right; font-size: 14px; font-weight: 600; }
 
   .sum-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
   .sum-row input[type=number] {
     width: 70px; padding: 5px 8px;
     border: 1px solid var(--border); border-radius: var(--radius-sm);
-    background: var(--bg); color: var(--text);
+    background: var(--surface2); color: var(--text);
     font-size: 14px; font-weight: 500; text-align: center;
   }
-  .sum-row input[type=number]:focus { outline: 2px solid var(--blue); border-color: var(--blue-deep); }
+  .sum-row input[type=number]:focus { outline: 2px solid var(--blue-mid); border-color: var(--blue); }
   .sep { font-size: 13px; color: var(--text-muted); }
 
   /* Checkbox row (consecutive) */
@@ -149,7 +143,7 @@
     color: var(--text-muted);
   }
   .check-label input[type=checkbox] {
-    width: 16px; height: 16px; accent-color: var(--blue-deep); cursor: pointer;
+    width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer;
   }
   .check-label span { font-weight: 500; }
 
@@ -157,16 +151,16 @@
   .gen-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
   .set-select {
     padding: 10px 14px; border: 1px solid var(--border);
-    border-radius: var(--radius-sm); background: var(--bg);
+    border-radius: var(--radius-sm); background: var(--surface2);
     color: var(--text); font-size: 14px; cursor: pointer;
   }
   .gen-btn {
-    flex: 1; padding: 12px 24px; background: var(--blue-deep);
+    flex: 1; padding: 12px 24px; background: var(--blue);
     color: #fff; border: none; border-radius: var(--radius-sm);
-    font-size: 15px; font-weight: 700; cursor: pointer;
-    letter-spacing: 0.02em; transition: background 0.12s, transform 0.08s;
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    letter-spacing: 0.02em; transition: background 0.1s, transform 0.08s;
   }
-  .gen-btn:hover { background: #3E6A91; }
+  .gen-btn:hover { background: #0F4A87; }
   .gen-btn:active { transform: scale(0.98); }
   .reset-link {
     font-size: 12px; color: var(--text-faint); background: none; border: none;
@@ -179,27 +173,27 @@
   #resultArea { display: none; }
   #resultArea.show { display: block; }
   .result-header {
-    font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
     color: var(--text-muted); text-transform: uppercase; margin-bottom: 1rem;
   }
   .result-set { margin-bottom: 1.25rem; }
   .result-set:last-child { margin-bottom: 0; }
-  .set-label { font-size: 11px; color: var(--text-faint); margin-bottom: 8px; font-weight: 600; }
+  .set-label { font-size: 11px; color: var(--text-faint); margin-bottom: 8px; font-weight: 500; }
   .result-nums { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   .rn {
-    width: 42px; height: 42px; border-radius: 50%;
+    width: 44px; height: 44px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 15px; font-weight: 700;
+    font-size: 15px; font-weight: 600;
   }
-  .rn-normal { background: var(--bg); border: 1.5px solid var(--border); color: var(--text); }
-  .rn-fixed { background: var(--blue); color: var(--blue-deep); border: 1.5px solid var(--blue); }
+  .rn-normal { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+  .rn-fixed { background: var(--blue); color: #fff; }
   .meta-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
   .meta-chip {
-    font-size: 11px; color: var(--text-muted); background: var(--bg);
+    font-size: 11px; color: var(--text-muted); background: var(--surface2);
     border: 1px solid var(--border); padding: 2px 9px; border-radius: 20px;
   }
   .divider { height: 1px; background: var(--border); margin: 1rem 0; }
-  .err { font-size: 13px; color: var(--pink-deep); padding: 10px 0; font-weight: 600; }
+  .err { font-size: 13px; color: var(--red); padding: 10px 0; font-weight: 500; }
 </style>
 </head>
 <body>
@@ -233,13 +227,13 @@
     <div class="cond-row">
       <div class="toggle-wrap">
         <label class="toggle">
-          <input type="checkbox" id="useFront" onchange="toggleCond('front')">
+          <input type="checkbox" id="useFront" checked onchange="toggleCond('front')">
           <span class="toggle-track"></span>
           <span class="toggle-thumb"></span>
         </label>
       </div>
-      <span class="cond-label off" id="labelFront">前半（1〜21）の個数</span>
-      <div class="cond-controls off" id="ctrlFront">
+      <span class="cond-label" id="labelFront">前半（1〜21）の個数</span>
+      <div class="cond-controls" id="ctrlFront">
         <div class="range-row">
           <input type="range" min="0" max="6" step="1" value="3" id="frontCount"
             oninput="document.getElementById('frontVal').textContent=this.value">
@@ -252,13 +246,13 @@
     <div class="cond-row">
       <div class="toggle-wrap">
         <label class="toggle">
-          <input type="checkbox" id="useOdd" onchange="toggleCond('odd')">
+          <input type="checkbox" id="useOdd" checked onchange="toggleCond('odd')">
           <span class="toggle-track"></span>
           <span class="toggle-thumb"></span>
         </label>
       </div>
-      <span class="cond-label off" id="labelOdd">奇数の個数</span>
-      <div class="cond-controls off" id="ctrlOdd">
+      <span class="cond-label" id="labelOdd">奇数の個数</span>
+      <div class="cond-controls" id="ctrlOdd">
         <div class="range-row">
           <input type="range" min="0" max="6" step="1" value="3" id="oddCount"
             oninput="document.getElementById('oddVal').textContent=this.value">
@@ -271,13 +265,13 @@
     <div class="cond-row">
       <div class="toggle-wrap">
         <label class="toggle">
-          <input type="checkbox" id="useSum" onchange="toggleCond('sum')">
+          <input type="checkbox" id="useSum" checked onchange="toggleCond('sum')">
           <span class="toggle-track"></span>
           <span class="toggle-thumb"></span>
         </label>
       </div>
-      <span class="cond-label off" id="labelSum">合計値の範囲</span>
-      <div class="cond-controls off" id="ctrlSum">
+      <span class="cond-label" id="labelSum">合計値の範囲</span>
+      <div class="cond-controls" id="ctrlSum">
         <div class="sum-row">
           <input type="number" id="sumMin" value="70" min="21" max="258">
           <span class="sep">〜</span>
@@ -337,40 +331,25 @@
 <script>
   const fixedState = new Set();
   const bannedState = new Set();
-  const NUM_GROUPS = [[1, 9], [10, 19], [20, 29], [30, 39], [40, 43]];
 
   function initGrid(gridId, stateSet, chipId, cls) {
     const g = document.getElementById(gridId);
-    NUM_GROUPS.forEach(([start, end]) => {
-      const row = document.createElement('div');
-      row.className = 'num-row';
-
-      const label = document.createElement('span');
-      label.className = 'num-row-label';
-      label.textContent = start + (end > start ? '–' + end : '');
-      row.appendChild(label);
-
-      const nums = document.createElement('div');
-      nums.className = 'num-row-nums';
-      for (let i = start; i <= end; i++) {
-        const b = document.createElement('button');
-        b.className = 'num-btn';
-        b.textContent = i;
-        b.id = gridId + '_' + i;
-        b.addEventListener('click', () => {
-          if (stateSet.has(i)) {
-            stateSet.delete(i);
-          } else {
-            stateSet.add(i);
-          }
-          syncDisabled();
-          updateChips(chipId, stateSet, cls === 'selected-fixed' ? 'chip-fixed' : 'chip-banned');
-        });
-        nums.appendChild(b);
-      }
-      row.appendChild(nums);
-      g.appendChild(row);
-    });
+    for (let i = 1; i <= 43; i++) {
+      const b = document.createElement('button');
+      b.className = 'num-btn';
+      b.textContent = i;
+      b.id = gridId + '_' + i;
+      b.addEventListener('click', () => {
+        if (stateSet.has(i)) {
+          stateSet.delete(i);
+        } else {
+          stateSet.add(i);
+        }
+        syncDisabled();
+        updateChips(chipId, stateSet, cls === 'selected-fixed' ? 'chip-fixed' : 'chip-banned');
+      });
+      g.appendChild(b);
+    }
   }
 
   function syncDisabled() {
@@ -416,9 +395,9 @@
     syncDisabled();
     updateChips('fixedChips', fixedState, 'chip-fixed');
     updateChips('bannedChips', bannedState, 'chip-banned');
-    document.getElementById('useFront').checked = false;
-    document.getElementById('useOdd').checked = false;
-    document.getElementById('useSum').checked = false;
+    document.getElementById('useFront').checked = true;
+    document.getElementById('useOdd').checked = true;
+    document.getElementById('useSum').checked = true;
     document.getElementById('useConsec').checked = false;
     document.getElementById('allowConsec').checked = true;
     document.getElementById('requireConsec').checked = false;
@@ -430,9 +409,11 @@
     document.getElementById('sumMax').value = 180;
     document.getElementById('setCount').value = 5;
     ['Front','Odd','Sum','Consec'].forEach(k => {
-      document.getElementById('ctrl' + k).classList.add('off');
-      document.getElementById('label' + k).classList.add('off');
+      document.getElementById('ctrl' + k).classList.remove('off');
+      document.getElementById('label' + k).classList.remove('off');
     });
+    document.getElementById('ctrlConsec').classList.add('off');
+    document.getElementById('labelConsec').classList.add('off');
     document.getElementById('resultArea').classList.remove('show');
   }
 
@@ -526,7 +507,7 @@
       ).join('');
       const div = (i < results.length - 1) ? '<div class="divider"></div>' : '';
       const consecChip = r.consec
-        ? '<span class="meta-chip" style="color:var(--blue-deep);">連続あり</span>'
+        ? '<span class="meta-chip" style="color:var(--blue);">連続あり</span>'
         : '<span class="meta-chip">連続なし</span>';
       return `<div class="result-set">
         <div class="set-label">セット ${i + 1}</div>
@@ -548,6 +529,10 @@
 
   initGrid('fixedGrid', fixedState, 'fixedChips', 'selected-fixed');
   initGrid('bannedGrid', bannedState, 'bannedChips', 'selected-banned');
+
+  // init consec off
+  document.getElementById('ctrlConsec').classList.add('off');
+  document.getElementById('labelConsec').classList.add('off');
 </script>
 </body>
 </html>
