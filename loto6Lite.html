@@ -328,6 +328,56 @@
 
 </div>
 
+<!-- Footer: note導線 -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-lead">このツールは「ロト6データラボ」が無料公開しています</p>
+    <p class="footer-sub">当選データの分析記事や、毎月更新のExcel本格版はnoteで公開中</p>
+    <a class="footer-link" href="https://note.com/profit_0707" target="_blank" rel="noopener">note で分析記事を読む →</a>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 32px;
+    padding: 28px 16px 36px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .footer-inner {
+    max-width: 480px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .footer-lead {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .footer-sub {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .footer-link {
+    display: inline-block;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--blue);
+    text-decoration: none;
+    padding: 9px 20px;
+    border: 1px solid var(--blue-mid);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    transition: background 0.15s ease;
+  }
+  .footer-link:hover {
+    background: var(--blue-light);
+  }
+</style>
+
 <script>
   const fixedState = new Set();
   const bannedState = new Set();
