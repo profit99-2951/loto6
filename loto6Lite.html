@@ -198,10 +198,36 @@
 </head>
 <body>
 
+<div class="trust-bar">
+  <span class="trust-dot"></span>
+  <span class="trust-text"><strong>ロト6データラボ</strong>が無料公開しているツールです。会員登録不要・データの外部送信もありません</span>
+</div>
+
 <header>
   <h1>ロト6 予想ツール</h1>
   <p>条件を設定して、予想番号を生成します</p>
+  <a class="guide-link" href="【記事3(使い方ガイド)のnote URL】" target="_blank" rel="noopener">初めての方はこちら:使い方ガイド →</a>
 </header>
+
+<style>
+  .trust-bar {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    max-width: 720px; margin: 0 auto 1.5rem; padding: 10px 16px;
+    background: var(--blue-light); border: 1px solid var(--blue-mid);
+    border-radius: var(--radius-sm); font-size: 12.5px; color: var(--text);
+  }
+  .trust-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--blue);
+    flex-shrink: 0;
+  }
+  .trust-text strong { color: var(--blue); }
+  .guide-link {
+    display: inline-block; margin-top: 10px; font-size: 12.5px; font-weight: 600;
+    color: var(--blue); text-decoration: none; border-bottom: 1px solid var(--blue-mid);
+    padding-bottom: 2px;
+  }
+  .guide-link:hover { border-bottom-color: var(--blue); }
+</style>
 
 <div class="container">
 
