@@ -118,8 +118,26 @@
   }
   .cond-label.off { color: var(--text-faint); }
 
-  .cond-controls { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .cond-controls { display: flex; flex-direction: column; align-items: stretch; gap: 8px; flex: 1; }
   .cond-controls.off { opacity: 0.35; pointer-events: none; }
+
+  /* 過去の傾向ヒント */
+  .stat-hint { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .stat-hint-label { font-size: 11px; color: var(--text-faint); margin-right: 2px; }
+  .stat-pill {
+    font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 20px;
+    background: var(--blue-light); color: var(--blue); border: none; cursor: pointer;
+    white-space: nowrap; transition: background 0.1s, transform 0.08s;
+  }
+  .stat-pill:hover { background: var(--blue-mid); }
+  .stat-pill:active { transform: scale(0.96); }
+  .stat-text { font-size: 11.5px; color: var(--text-muted); }
+
+  @media (max-width: 480px) {
+    .cond-row { flex-wrap: wrap; }
+    .cond-label { min-width: 0; flex: 1 1 auto; }
+    .cond-controls { flex: 1 1 100%; margin-left: 48px; width: calc(100% - 48px); }
+  }
 
   .range-row { display: flex; align-items: center; gap: 8px; flex: 1; }
   .range-row input[type=range] { flex: 1; accent-color: var(--blue); cursor: pointer; }
@@ -265,6 +283,12 @@
             oninput="document.getElementById('frontVal').textContent=this.value">
           <span class="range-val" id="frontVal">3</span>
         </div>
+        <div class="stat-hint">
+          <span class="stat-hint-label">過去の傾向:</span>
+          <button type="button" class="stat-pill" onclick="setFrontCount(3)">3個 34.8%</button>
+          <button type="button" class="stat-pill" onclick="setFrontCount(2)">2個 24.5%</button>
+          <button type="button" class="stat-pill" onclick="setFrontCount(4)">4個 21.8%</button>
+        </div>
       </div>
     </div>
 
@@ -284,6 +308,12 @@
             oninput="document.getElementById('oddVal').textContent=this.value">
           <span class="range-val" id="oddVal">3</span>
         </div>
+        <div class="stat-hint">
+          <span class="stat-hint-label">過去の傾向:</span>
+          <button type="button" class="stat-pill" onclick="setOddCount(3)">3個 33.0%</button>
+          <button type="button" class="stat-pill" onclick="setOddCount(4)">4個 24.8%</button>
+          <button type="button" class="stat-pill" onclick="setOddCount(2)">2個 24.2%</button>
+        </div>
       </div>
     </div>
 
@@ -302,6 +332,12 @@
           <input type="number" id="sumMin" value="70" min="21" max="258">
           <span class="sep">〜</span>
           <input type="number" id="sumMax" value="180" min="21" max="258">
+        </div>
+        <div class="stat-hint">
+          <span class="stat-hint-label">過去の傾向:</span>
+          <button type="button" class="stat-pill" onclick="setSumRange(130,149)">130〜149 27.0%</button>
+          <button type="button" class="stat-pill" onclick="setSumRange(110,129)">110〜129 24.9%</button>
+          <button type="button" class="stat-pill" onclick="setSumRange(150,169)">150〜169 16.7%</button>
         </div>
       </div>
     </div>
@@ -326,6 +362,9 @@
             <input type="checkbox" id="requireConsec">
             <span>必ず1ペア含める</span>
           </label>
+        </div>
+        <div class="stat-hint">
+          <span class="stat-text">過去の傾向:連続数字を含む回が54.3%で多数派です</span>
         </div>
       </div>
     </div>
@@ -406,6 +445,20 @@
 
 <script>
   const fixedState = new Set();
+
+  // 過去の傾向ピル:クリックでスライダー/入力値を即セット
+  function setFrontCount(v) {
+    document.getElementById('frontCount').value = v;
+    document.getElementById('frontVal').textContent = v;
+  }
+  function setOddCount(v) {
+    document.getElementById('oddCount').value = v;
+    document.getElementById('oddVal').textContent = v;
+  }
+  function setSumRange(min, max) {
+    document.getElementById('sumMin').value = min;
+    document.getElementById('sumMax').value = max;
+  }
   const bannedState = new Set();
 
   function initGrid(gridId, stateSet, chipId, cls) {
