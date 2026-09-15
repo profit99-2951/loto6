@@ -121,6 +121,16 @@
   .cond-controls { display: flex; flex-direction: column; align-items: stretch; gap: 8px; flex: 1; }
   .cond-controls.off { opacity: 0.35; pointer-events: none; }
 
+  .auto-fill-row { margin-bottom: 1rem; }
+  .auto-fill-btn {
+    width: 100%; padding: 10px 14px; background: var(--blue-light);
+    border: 1px solid var(--blue-mid); border-radius: var(--radius-sm);
+    color: var(--blue); font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: background 0.1s;
+  }
+  .auto-fill-btn:hover { background: var(--blue-mid); }
+  .auto-fill-btn:active { transform: scale(0.99); }
+
   /* 過去の傾向ヒント */
   .stat-hint { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .stat-hint-label { font-size: 11px; color: var(--text-faint); margin-right: 2px; }
@@ -227,6 +237,34 @@
   <a class="guide-link" href="【記事3(使い方ガイド)のnote URL】" target="_blank" rel="noopener">初めての方はこちら:使い方ガイド →</a>
 </header>
 
+<div class="step-guide">
+  <div class="step"><span class="step-num">1</span>条件を選ぶ(迷ったら「過去の傾向」を押すだけでOK)</div>
+  <div class="step-arrow">→</div>
+  <div class="step"><span class="step-num">2</span>セット数を選ぶ</div>
+  <div class="step-arrow">→</div>
+  <div class="step"><span class="step-num">3</span>「予想を生成」を押す</div>
+</div>
+
+<style>
+  .step-guide {
+    max-width: 720px; margin: 0 auto 1.5rem; padding: 12px 16px;
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+    gap: 8px; background: var(--surface2); border-radius: var(--radius-sm);
+    font-size: 12px; color: var(--text-muted);
+  }
+  .step { display: flex; align-items: center; gap: 6px; }
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%; background: var(--blue);
+    color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .step-arrow { color: var(--text-faint); font-size: 11px; }
+  @media (max-width: 480px) {
+    .step-guide { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .step-arrow { display: none; }
+  }
+</style>
+
 <style>
   .trust-bar {
     display: flex; align-items: center; justify-content: center; gap: 8px;
@@ -266,6 +304,10 @@
   <!-- Conditions -->
   <div class="card">
     <div class="card-title">当選条件</div>
+
+    <div class="auto-fill-row">
+      <button type="button" class="auto-fill-btn" onclick="autoFillRecommended()">おまかせ設定(過去データの最頻パターンを一括セット)</button>
+    </div>
 
     <!-- Front count -->
     <div class="cond-row">
@@ -458,6 +500,17 @@
   function setSumRange(min, max) {
     document.getElementById('sumMin').value = min;
     document.getElementById('sumMax').value = max;
+  }
+
+  // おまかせ設定:過去データの最頻パターンを一括セットし、各トグルをONにする
+  function autoFillRecommended() {
+    ['useFront', 'useOdd', 'useSum'].forEach(id => {
+      document.getElementById(id).checked = true;
+    });
+    toggleCond('front'); toggleCond('odd'); toggleCond('sum');
+    setFrontCount(3);
+    setOddCount(3);
+    setSumRange(130, 149);
   }
   const bannedState = new Set();
 
