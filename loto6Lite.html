@@ -126,10 +126,14 @@
     width: 100%; padding: 10px 14px; background: var(--blue-light);
     border: 1px solid var(--blue-mid); border-radius: var(--radius-sm);
     color: var(--blue); font-size: 13px; font-weight: 600; cursor: pointer;
-    transition: background 0.1s;
+    transition: background 0.1s; line-height: 1.5;
   }
   .auto-fill-btn:hover { background: var(--blue-mid); }
   .auto-fill-btn:active { transform: scale(0.99); }
+  .auto-fill-sub {
+    display: block; font-size: 11px; font-weight: 500;
+    color: var(--blue); opacity: 0.75; margin-top: 2px;
+  }
 
   /* 過去の傾向ヒント */
   .stat-hint { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -306,7 +310,7 @@
     <div class="card-title">当選条件</div>
 
     <div class="auto-fill-row">
-      <button type="button" class="auto-fill-btn" onclick="autoFillRecommended()">おまかせ設定(過去データの最頻パターンを一括セット)</button>
+      <button type="button" class="auto-fill-btn" onclick="autoFillRecommended()">おまかせ設定<span class="auto-fill-sub">(過去データの最頻パターンを一括セット)</span></button>
     </div>
 
     <!-- Front count -->
