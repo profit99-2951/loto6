@@ -331,9 +331,9 @@
         </div>
         <div class="stat-hint">
           <span class="stat-hint-label">過去の傾向:</span>
-          <button type="button" class="stat-pill" onclick="setFrontCount(3)">3個 34.8%</button>
-          <button type="button" class="stat-pill" onclick="setFrontCount(2)">2個 24.5%</button>
-          <button type="button" class="stat-pill" onclick="setFrontCount(4)">4個 21.8%</button>
+          <button type="button" class="stat-pill" onclick="setFrontCount(3, true)">3個 34.8%</button>
+          <button type="button" class="stat-pill" onclick="setFrontCount(2, true)">2個 24.5%</button>
+          <button type="button" class="stat-pill" onclick="setFrontCount(4, true)">4個 21.8%</button>
         </div>
       </div>
     </div>
@@ -356,9 +356,9 @@
         </div>
         <div class="stat-hint">
           <span class="stat-hint-label">過去の傾向:</span>
-          <button type="button" class="stat-pill" onclick="setOddCount(3)">3個 33.0%</button>
-          <button type="button" class="stat-pill" onclick="setOddCount(4)">4個 24.8%</button>
-          <button type="button" class="stat-pill" onclick="setOddCount(2)">2個 24.2%</button>
+          <button type="button" class="stat-pill" onclick="setOddCount(3, true)">3個 33.0%</button>
+          <button type="button" class="stat-pill" onclick="setOddCount(4, true)">4個 24.8%</button>
+          <button type="button" class="stat-pill" onclick="setOddCount(2, true)">2個 24.2%</button>
         </div>
       </div>
     </div>
@@ -381,9 +381,9 @@
         </div>
         <div class="stat-hint">
           <span class="stat-hint-label">過去の傾向:</span>
-          <button type="button" class="stat-pill" onclick="setSumRange(130,149)">130〜149 27.0%</button>
-          <button type="button" class="stat-pill" onclick="setSumRange(110,129)">110〜129 24.9%</button>
-          <button type="button" class="stat-pill" onclick="setSumRange(150,169)">150〜169 16.7%</button>
+          <button type="button" class="stat-pill" onclick="setSumRange(130,149,true)">130〜149 27.0%</button>
+          <button type="button" class="stat-pill" onclick="setSumRange(110,129,true)">110〜129 24.9%</button>
+          <button type="button" class="stat-pill" onclick="setSumRange(150,169,true)">150〜169 16.7%</button>
         </div>
       </div>
     </div>
@@ -493,21 +493,34 @@
   const fixedState = new Set();
 
   // 過去の傾向ピル:クリックでスライダー/入力値を即セット
-  function setFrontCount(v) {
+  // track=true のときだけGA4に送信(おまかせ設定からの内部呼び出しと区別するため)
+  function setFrontCount(v, track) {
     document.getElementById('frontCount').value = v;
     document.getElementById('frontVal').textContent = v;
+    if (track && typeof gtag === 'function') {
+      gtag('event', 'tool_stat_pill', { event_category: 'engagement', event_label: 'front_' + v });
+    }
   }
-  function setOddCount(v) {
+  function setOddCount(v, track) {
     document.getElementById('oddCount').value = v;
     document.getElementById('oddVal').textContent = v;
+    if (track && typeof gtag === 'function') {
+      gtag('event', 'tool_stat_pill', { event_category: 'engagement', event_label: 'odd_' + v });
+    }
   }
-  function setSumRange(min, max) {
+  function setSumRange(min, max, track) {
     document.getElementById('sumMin').value = min;
     document.getElementById('sumMax').value = max;
+    if (track && typeof gtag === 'function') {
+      gtag('event', 'tool_stat_pill', { event_category: 'engagement', event_label: 'sum_' + min + '-' + max });
+    }
   }
 
   // おまかせ設定:過去データの最頻パターンを一括セットし、各トグルをONにする
   function autoFillRecommended() {
+    if (typeof gtag === 'function') {
+      gtag('event', 'tool_autofill', { event_category: 'engagement', event_label: 'autofill_button' });
+    }
     ['useFront', 'useOdd', 'useSum'].forEach(id => {
       document.getElementById(id).checked = true;
     });
@@ -619,6 +632,9 @@
   }
 
   function generate() {
+    if (typeof gtag === 'function') {
+      gtag('event', 'tool_generate', { event_category: 'engagement', event_label: 'generate_button' });
+    }
     const fixed = Array.from(fixedState);
     const banned = Array.from(bannedState);
     const useFront = document.getElementById('useFront').checked;
