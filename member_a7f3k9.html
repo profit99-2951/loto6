@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ロト6データラボ メンバー版</title>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-91G6P796K2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-91G6P796K2');
+</script>
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F8F7F4;
+    --surface: #FFFFFF;
+    --surface2: #F2F1EE;
+    --border: #E4E2DC;
+    --text: #1A1917;
+    --text-muted: #7A7870;
+    --text-faint: #B0AEA8;
+    --blue: #185FA5;
+    --blue-light: #E6F1FB;
+    --blue-mid: #B5D4F4;
+    --red: #A32D2D;
+    --red-light: #FCEBEB;
+    --gold: #B8860B;
+    --gold-light: #FDF6E3;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+
+  body {
+    font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 1.5rem 1rem 3rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* ===== 認証画面 ===== */
+  .gate {
+    max-width: 420px; margin: 4rem auto; padding: 2rem 1.5rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); text-align: center;
+  }
+  .gate h1 { font-size: 20px; margin-bottom: 8px; }
+  .gate p { font-size: 13px; color: var(--text-muted); margin-bottom: 1.5rem; }
+  .gate input {
+    width: 100%; padding: 12px; font-size: 16px; text-align: center;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    margin-bottom: 12px; background: var(--surface2);
+  }
+  .gate input:focus { outline: 2px solid var(--blue-mid); border-color: var(--blue); }
+  .gate button {
+    width: 100%; padding: 12px; font-size: 15px; font-weight: 600;
+    background: var(--blue); color: #fff; border: none;
+    border-radius: var(--radius-sm); cursor: pointer;
+  }
+  .gate .err { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 20px; }
+  .gate .note { font-size: 11.5px; color: var(--text-faint); margin-top: 1.5rem; line-height: 1.7; }
+
+  /* ===== 本体 ===== */
+  #app { display: none; max-width: 720px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 1.25rem; }
+  header h1 { font-size: 19px; font-weight: 700; letter-spacing: 0.02em; }
+  header .sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .latest-bar {
+    background: var(--blue-light); border: 1px solid var(--blue-mid);
+    border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 1.25rem;
+    font-size: 13px;
+  }
+  .latest-bar .label { font-size: 11px; color: var(--blue); font-weight: 700; }
+  .latest-nums { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+  .latest-nums .n {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 32px; height: 32px; border-radius: 50%;
+    background: var(--surface); border: 1.5px solid var(--blue);
+    color: var(--blue); font-weight: 700; font-size: 14px;
+  }
+  .latest-nums .n.bonus { border-color: var(--gold); color: var(--gold); border-style: dashed; }
+  .latest-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 8px; }
+
+  /* タブ */
+  .tabs {
+    display: flex; gap: 4px; margin-bottom: 1rem;
+    overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px;
+  }
+  .tab {
+    flex-shrink: 0; padding: 9px 14px; font-size: 13px; font-weight: 600;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; color: var(--text-muted); cursor: pointer;
+    white-space: nowrap;
+  }
+  .tab.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;
+  }
+  .card-title {
+    font-size: 13px; font-weight: 700; margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
+  }
+  .hint { font-size: 11.5px; color: var(--text-faint); margin-top: 8px; line-height: 1.6; }
+
+  /* 表 */
+  .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table { border-collapse: collapse; font-size: 12px; width: 100%; }
+  th, td { padding: 5px 6px; text-align: center; border: 1px solid var(--border); white-space: nowrap; }
+  th { background: var(--surface2); font-weight: 600; font-size: 11px; color: var(--text-muted); }
+  td.kai { color: var(--text-muted); font-size: 11px; }
+
+  /* 出目表のドット */
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--blue); }
+  .dot.bonus { background: var(--gold); }
+  .demoku td { padding: 3px 2px; }
+  .demoku th { padding: 3px 2px; font-size: 10px; }
+
+  /* ランキング */
+  .rank-list { display: flex; flex-direction: column; gap: 6px; }
+  .rank-row {
+    display: flex; align-items: center; gap: 10px; padding: 8px 10px;
+    background: var(--surface2); border-radius: var(--radius-sm); font-size: 13px;
+  }
+  .rank-pos { font-size: 11px; color: var(--text-faint); min-width: 28px; }
+  .rank-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 30px; height: 30px; border-radius: 50%;
+    background: var(--blue); color: #fff; font-weight: 700; font-size: 13px;
+  }
+  .rank-num.cold { background: var(--text-muted); }
+  .rank-info { flex: 1; font-size: 12.5px; }
+  .rank-sub { font-size: 11px; color: var(--text-faint); }
+
+  /* 統計 */
+  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
+  .stat-box { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .stat-label { font-size: 11px; color: var(--text-muted); }
+  .stat-val { font-size: 17px; font-weight: 700; margin-top: 2px; }
+  .stat-note { font-size: 10.5px; color: var(--text-faint); }
+
+  /* 数字グリッド(予想入力) */
+  .num-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+  .num-btn {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
+    cursor: pointer; user-select: none; color: var(--text);
+  }
+  .num-btn.on { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  .btn-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .btn {
+    flex: 1; min-width: 120px; padding: 11px 14px; font-size: 14px; font-weight: 600;
+    border-radius: var(--radius-sm); cursor: pointer; border: 1px solid var(--blue);
+    background: var(--blue); color: #fff;
+  }
+  .btn.sub { background: var(--surface); color: var(--blue); }
+  .btn:active { transform: scale(0.99); }
+
+  .saved-item {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 10px; background: var(--surface2);
+    border-radius: var(--radius-sm); margin-bottom: 8px; font-size: 13px;
+  }
+  .saved-nums { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
+  .saved-nums span {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 26px; height: 26px; border-radius: 50%;
+    background: var(--surface); border: 1px solid var(--border);
+    font-size: 12px; font-weight: 600;
+  }
+  .saved-nums span.hit { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .saved-nums span.bhit { background: var(--gold-light); border-color: var(--gold); color: var(--gold); }
+  .del-btn {
+    background: none; border: none; color: var(--text-faint);
+    font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1;
+  }
+  .result-badge {
+    font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 12px;
+    background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
+  }
+  .result-badge.win { background: var(--red-light); border-color: var(--red); color: var(--red); }
+
+  .loading { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 13px; }
+  .error-box {
+    background: var(--red-light); border: 1px solid var(--red);
+    border-radius: var(--radius-sm); padding: 12px; font-size: 13px; color: var(--red);
+  }
+
+  footer {
+    margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
+    text-align: center; font-size: 11.5px; color: var(--text-faint); line-height: 1.7;
+  }
+  footer a { color: var(--blue); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<!-- 認証画面 -->
+<div class="gate" id="gate">
+  <h1>ロト6データラボ メンバー版</h1>
+  <p>メンバー限定ツールです。<br>合言葉を入力してください。</p>
+  <input type="password" id="pw" placeholder="合言葉" autocomplete="off">
+  <button onclick="checkPw()">入る</button>
+  <div class="err" id="pwErr"></div>
+  <div class="note">
+    合言葉はメンバー限定記事に記載しています。<br>
+    メンバーシップについては<a href="【メンバーシップ案内のURL】" target="_blank" rel="noopener" style="color:var(--blue)">こちら</a>
+  </div>
+</div>
+
+<!-- 本体 -->
+<div id="app">
+  <header>
+    <h1>ロト6データラボ メンバー版</h1>
+    <div class="sub" id="dataRange">データ読み込み中…</div>
+  </header>
+
+  <div class="latest-bar" id="latestBar"></div>
+
+  <div class="tabs">
+    <div class="tab active" data-panel="p-rank" onclick="switchTab(this)">ランキング</div>
+    <div class="tab" data-panel="p-demoku" onclick="switchTab(this)">出目表</div>
+    <div class="tab" data-panel="p-keta" onclick="switchTab(this)">桁別</div>
+    <div class="tab" data-panel="p-trend" onclick="switchTab(this)">直近の傾向</div>
+    <div class="tab" data-panel="p-my" onclick="switchTab(this)">マイ予想</div>
+  </div>
+
+  <!-- ランキング -->
+  <div class="panel active" id="p-rank">
+    <div class="card">
+      <div class="card-title">ご無沙汰数字 TOP10</div>
+      <div class="rank-list" id="gosataList"></div>
+      <div class="hint">最後に出てから何回経過したかの順位です。カッコ内はその数字の自己最長記録。</div>
+    </div>
+    <div class="card">
+      <div class="card-title">よく出ている数字 TOP10(直近100回)</div>
+      <div class="rank-list" id="hotList"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">出ていない数字 WORST10(直近100回)</div>
+      <div class="rank-list" id="coldList"></div>
+      <div class="hint">抽せんは毎回独立しているので、これらの数字が次回出やすい/出にくいということはありません。</div>
+    </div>
+  </div>
+
+  <!-- 出目表 -->
+  <div class="panel" id="p-demoku">
+    <div class="card">
+      <div class="card-title">出目表(直近30回)</div>
+      <div class="scroll-x"><table class="demoku" id="demokuTable"></table></div>
+      <div class="hint">● 本数字 / ● ボーナス数字。横スクロールできます。</div>
+    </div>
+  </div>
+
+  <!-- 桁別 -->
+  <div class="panel" id="p-keta">
+    <div class="card">
+      <div class="card-title">桁別出目表(直近30回)</div>
+      <div class="scroll-x"><table id="ketaTable"></table></div>
+      <div class="hint">1〜9 / 10代 / 20代 / 30代 / 40〜43 の5ゾーンから、各回何個出たかを示しています。</div>
+    </div>
+    <div class="card">
+      <div class="card-title">ゾーン別の出現割合</div>
+      <div class="stat-grid" id="ketaStats"></div>
+    </div>
+  </div>
+
+  <!-- 直近の傾向 -->
+  <div class="panel" id="p-trend">
+    <div class="card">
+      <div class="card-title">直近10回の分析</div>
+      <div class="stat-grid" id="trend10"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">直近50回の分析</div>
+      <div class="stat-grid" id="trend50"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">全期間の分析(参考)</div>
+      <div class="stat-grid" id="trendAll"></div>
+    </div>
+  </div>
+
+  <!-- マイ予想 -->
+  <div class="panel" id="p-my">
+    <div class="card">
+      <div class="card-title">予想数字を選ぶ(6個)</div>
+      <div class="num-grid" id="myGrid"></div>
+      <div class="btn-row">
+        <button class="btn" onclick="savePrediction()">保存する</button>
+        <button class="btn sub" onclick="clearSelection()">選択をクリア</button>
+      </div>
+      <div class="hint" id="mySelInfo">0個選択中</div>
+    </div>
+    <div class="card">
+      <div class="card-title">保存した予想と当せん確認</div>
+      <div id="savedList"></div>
+      <div class="hint">最新の抽せん結果と自動で照合します。この端末のブラウザに保存されるため、他の端末とは共有されません。</div>
+    </div>
+    <div class="card">
+      <div class="card-title">過去の全抽せんで検証</div>
+      <div id="backtestArea"></div>
+      <div class="hint">保存した予想を第1回から買い続けた場合、何等が何回当たっていたかを集計します。過去の結果が将来を示すものではありません。</div>
+    </div>
+  </div>
+
+  <footer>
+    ロト6データラボ メンバー限定ツール<br>
+    <a href="【note記事1のURL】" target="_blank" rel="noopener">note で分析記事を読む →</a><br><br>
+    本ツールは統計分析を楽しむことを目的としたものであり、当せんを保証するものではありません。
+  </footer>
+</div>
+
+<div class="loading" id="loading" style="display:none">データを読み込んでいます…</div>
+
+<script>
+/* ============ 設定 ============ */
+// 合言葉(毎月変更する)。メンバー限定記事に記載した値と一致させる。
+const PASSWORD = '【ここに合言葉を設定】';
+const CSV_PATH = 'loto6.csv';   // 同じフォルダに置いたCSV
+
+/* ============ 認証 ============ */
+function checkPw() {
+  const v = document.getElementById('pw').value.trim();
+  if (v === PASSWORD) {
+    sessionStorage.setItem('l6auth', '1');
+    enterApp();
+  } else {
+    document.getElementById('pwErr').textContent = '合言葉が違います。';
+  }
+}
+document.getElementById('pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPw();
+});
+
+function enterApp() {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  if (typeof gtag === 'function') gtag('event', 'member_tool_open');
+  loadData();
+}
+
+if (sessionStorage.getItem('l6auth') === '1') enterApp();
+
+/* ============ データ読み込み ============ */
+let DRAWS = [];   // {kai, date, nums[6], bonus}
+
+async function loadData() {
+  try {
+    const res = await fetch(CSV_PATH);
+    if (!res.ok) throw new Error('CSVが見つかりません');
+    const buf = await res.arrayBuffer();
+    // Shift_JIS / UTF-8 両対応
+    let text;
+    try {
+      text = new TextDecoder('shift_jis').decode(buf);
+      if (!text.includes('開催回')) throw new Error('retry');
+    } catch (e) {
+      text = new TextDecoder('utf-8').decode(buf);
+    }
+    parseCsv(text);
+    render();
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  } catch (e) {
+    document.getElementById('loading').innerHTML =
+      '<div class="error-box">データの読み込みに失敗しました。<br>' + e.message + '</div>';
+  }
+}
+
+function parseCsv(text) {
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  const header = lines[0].split(',');
+  const idx = name => header.findIndex(h => h.trim() === name);
+  const iKai = idx('開催回'), iDate = idx('日付'), iB = idx('BONUS数字');
+  const iNums = ['第1数字','第2数字','第3数字','第4数字','第5数字','第6数字'].map(idx);
+
+  DRAWS = [];
+  for (let i = 1; i < lines.length; i++) {
+    const c = lines[i].split(',');
+    if (c.length < 9) continue;
+    const nums = iNums.map(j => parseInt(c[j], 10));
+    if (nums.some(isNaN)) continue;
+    DRAWS.push({
+      kai: parseInt(c[iKai], 10),
+      date: (c[iDate] || '').trim(),
+      nums: nums.sort((a,b) => a-b),
+      bonus: parseInt(c[iB], 10)
+    });
+  }
+  DRAWS.sort((a,b) => a.kai - b.kai);
+}
+
+/* ============ 集計ユーティリティ ============ */
+function countIn(list) {
+  const c = {};
+  for (let i = 1; i <= 43; i++) c[i] = 0;
+  list.forEach(d => d.nums.forEach(n => c[n]++));
+  return c;
+}
+function gosataInfo() {
+  const latest = DRAWS[DRAWS.length-1].kai;
+  const info = [];
+  for (let n = 1; n <= 43; n++) {
+    const appear = DRAWS.filter(d => d.nums.includes(n)).map(d => d.kai);
+    if (!appear.length) continue;
+    let maxGap = 0;
+    for (let i = 1; i < appear.length; i++) maxGap = Math.max(maxGap, appear[i]-appear[i-1]);
+    info.push({ n, gap: latest - appear[appear.length-1], maxGap });
+  }
+  info.sort((a,b) => b.gap - a.gap || a.n - b.n);
+  return info;
+}
+function analyze(list) {
+  const n = list.length;
+  if (!n) return null;
+  const sums = list.map(d => d.nums.reduce((a,b)=>a+b,0));
+  const odds = list.map(d => d.nums.filter(x => x%2===1).length);
+  const fronts = list.map(d => d.nums.filter(x => x<=21).length);
+  const consec = list.filter(d => d.nums.some((x,i) => i>0 && x - d.nums[i-1] === 1)).length;
+  const mode = arr => {
+    const c = {}; arr.forEach(v => c[v]=(c[v]||0)+1);
+    return Object.entries(c).sort((a,b)=>b[1]-a[1])[0];
+  };
+  return {
+    n,
+    sumAvg: Math.round(sums.reduce((a,b)=>a+b,0)/n),
+    sumMin: Math.min(...sums), sumMax: Math.max(...sums),
+    oddMode: mode(odds), frontMode: mode(fronts),
+    consec, consecPct: (consec/n*100).toFixed(1)
+  };
+}
+
+/* ============ 描画 ============ */
+function render() {
+  const latest = DRAWS[DRAWS.length-1];
+  document.getElementById('dataRange').textContent =
+    `第${DRAWS[0].kai}回〜第${latest.kai}回(全${DRAWS.length}回)を収録`;
+
+  document.getElementById('latestBar').innerHTML =
+    `<div class="label">最新の抽せん結果</div>
+     <div style="font-size:12.5px;margin-top:2px">第${latest.kai}回(${latest.date})</div>
+     <div class="latest-nums">
+       ${latest.nums.map(n=>`<span class="n">${n}</span>`).join('')}
+       <span class="n bonus">${latest.bonus}</span>
+     </div>
+     <div class="latest-meta">合計 ${latest.nums.reduce((a,b)=>a+b,0)} ・
+       奇数 ${latest.nums.filter(x=>x%2===1).length}個 ・
+       前半 ${latest.nums.filter(x=>x<=21).length}個 ・
+       ${latest.nums.some((x,i)=>i>0&&x-latest.nums[i-1]===1)?'連番あり':'連番なし'}
+       (点線がボーナス数字)</div>`;
+
+  renderRanking();
+  renderDemoku();
+  renderKeta();
+  renderTrend();
+  renderMyGrid();
+  renderSaved();
+}
+
+function renderRanking() {
+  const gos = gosataInfo().slice(0,10);
+  document.getElementById('gosataList').innerHTML = gos.map((g,i)=>
+    `<div class="rank-row">
+      <span class="rank-pos">${i+1}位</span>
+      <span class="rank-num cold">${g.n}</span>
+      <span class="rank-info">${g.gap}回連続で不出現
+        <span class="rank-sub">(自己最長 ${g.maxGap}回)</span></span>
+    </div>`).join('');
+
+  const last100 = DRAWS.slice(-100);
+  const c = countIn(last100);
+  const sorted = Object.entries(c).map(([n,v])=>({n:+n,v})).sort((a,b)=>b.v-a.v||a.n-b.n);
+  const exp = (last100.length*6/43).toFixed(1);
+
+  document.getElementById('hotList').innerHTML = sorted.slice(0,10).map((x,i)=>
+    `<div class="rank-row">
+      <span class="rank-pos">${i+1}位</span>
+      <span class="rank-num">${x.n}</span>
+      <span class="rank-info">${x.v}回<span class="rank-sub">(理論値 ${exp}回)</span></span>
+    </div>`).join('');
+
+  document.getElementById('coldList').innerHTML = sorted.slice(-10).reverse().map((x,i)=>
+    `<div class="rank-row">
+      <span class="rank-pos">${i+1}位</span>
+      <span class="rank-num cold">${x.n}</span>
+      <span class="rank-info">${x.v}回<span class="rank-sub">(理論値 ${exp}回)</span></span>
+    </div>`).join('');
+}
+
+function renderDemoku() {
+  const list = DRAWS.slice(-30).reverse();
+  let html = '<tr><th>回</th>';
+  for (let n=1; n<=43; n++) html += `<th>${n}</th>`;
+  html += '</tr>';
+  list.forEach(d => {
+    html += `<tr><td class="kai">${d.kai}</td>`;
+    for (let n=1; n<=43; n++) {
+      if (d.nums.includes(n)) html += '<td><span class="dot"></span></td>';
+      else if (d.bonus === n) html += '<td><span class="dot bonus"></span></td>';
+      else html += '<td></td>';
+    }
+    html += '</tr>';
+  });
+  document.getElementById('demokuTable').innerHTML = html;
+}
+
+const ZONES = [[1,9,'1〜9'],[10,19,'10代'],[20,29,'20代'],[30,39,'30代'],[40,43,'40〜43']];
+
+function renderKeta() {
+  const list = DRAWS.slice(-30).reverse();
+  let html = '<tr><th>回</th>' + ZONES.map(z=>`<th>${z[2]}</th>`).join('') + '</tr>';
+  list.forEach(d => {
+    html += `<tr><td class="kai">${d.kai}</td>`;
+    ZONES.forEach(([lo,hi]) => {
+      const cnt = d.nums.filter(n => n>=lo && n<=hi).length;
+      html += `<td>${cnt ? cnt : ''}</td>`;
+    });
+    html += '</tr>';
+  });
+  document.getElementById('ketaTable').innerHTML = html;
+
+  const all = DRAWS.length * 6;
+  document.getElementById('ketaStats').innerHTML = ZONES.map(([lo,hi,label]) => {
+    let c = 0;
+    DRAWS.forEach(d => c += d.nums.filter(n=>n>=lo&&n<=hi).length);
+    return `<div class="stat-box">
+      <div class="stat-label">${label}</div>
+      <div class="stat-val">${(c/all*100).toFixed(1)}%</div>
+      <div class="stat-note">全期間 ${c}個</div>
+    </div>`;
+  }).join('');
+}
+
+function statHtml(a, label) {
+  if (!a) return '';
+  return `<div class="stat-box"><div class="stat-label">合計値の平均</div>
+      <div class="stat-val">${a.sumAvg}</div>
+      <div class="stat-note">${a.sumMin}〜${a.sumMax}(理論平均132)</div></div>
+    <div class="stat-box"><div class="stat-label">最も多い奇数の個数</div>
+      <div class="stat-val">${a.oddMode[0]}個</div>
+      <div class="stat-note">${a.n}回中${a.oddMode[1]}回</div></div>
+    <div class="stat-box"><div class="stat-label">最も多い前半の個数</div>
+      <div class="stat-val">${a.frontMode[0]}個</div>
+      <div class="stat-note">${a.n}回中${a.frontMode[1]}回</div></div>
+    <div class="stat-box"><div class="stat-label">連番の発生</div>
+      <div class="stat-val">${a.consecPct}%</div>
+      <div class="stat-note">${a.n}回中${a.consec}回</div></div>`;
+}
+function renderTrend() {
+  document.getElementById('trend10').innerHTML  = statHtml(analyze(DRAWS.slice(-10)));
+  document.getElementById('trend50').innerHTML  = statHtml(analyze(DRAWS.slice(-50)));
+  document.getElementById('trendAll').innerHTML = statHtml(analyze(DRAWS));
+}
+
+/* ============ マイ予想 ============ */
+let selected = new Set();
+
+function renderMyGrid() {
+  let html = '';
+  for (let n=1; n<=43; n++) {
+    html += `<div class="num-btn" data-n="${n}" onclick="toggleNum(${n}, this)">${n}</div>`;
+  }
+  document.getElementById('myGrid').innerHTML = html;
+}
+function toggleNum(n, el) {
+  if (selected.has(n)) { selected.delete(n); el.classList.remove('on'); }
+  else {
+    if (selected.size >= 6) return;
+    selected.add(n); el.classList.add('on');
+  }
+  document.getElementById('mySelInfo').textContent = `${selected.size}個選択中`;
+}
+function clearSelection() {
+  selected.clear();
+  document.querySelectorAll('#myGrid .num-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('mySelInfo').textContent = '0個選択中';
+}
+
+function getSaved() {
+  try { return JSON.parse(localStorage.getItem('l6_preds') || '[]'); }
+  catch(e) { return []; }
+}
+function setSaved(v) {
+  try { localStorage.setItem('l6_preds', JSON.stringify(v)); } catch(e) {}
+}
+function savePrediction() {
+  if (selected.size !== 6) { alert('6個選んでください。'); return; }
+  const arr = getSaved();
+  const nums = Array.from(selected).sort((a,b)=>a-b);
+  if (arr.some(p => p.join(',') === nums.join(','))) { alert('同じ組み合わせが保存済みです。'); return; }
+  arr.push(nums);
+  setSaved(arr);
+  if (typeof gtag === 'function') gtag('event', 'member_save_prediction');
+  clearSelection();
+  renderSaved();
+}
+function deletePrediction(i) {
+  const arr = getSaved();
+  arr.splice(i,1);
+  setSaved(arr);
+  renderSaved();
+}
+
+function judge(nums, draw) {
+  const hit = nums.filter(n => draw.nums.includes(n)).length;
+  const bhit = nums.includes(draw.bonus);
+  if (hit === 6) return 1;
+  if (hit === 5 && bhit) return 2;
+  if (hit === 5) return 3;
+  if (hit === 4) return 4;
+  if (hit === 3) return 5;
+  return 0;
+}
+
+function renderSaved() {
+  const arr = getSaved();
+  const box = document.getElementById('savedList');
+  if (!arr.length) {
+    box.innerHTML = '<div class="hint">まだ保存された予想はありません。</div>';
+    document.getElementById('backtestArea').innerHTML =
+      '<div class="hint">予想を保存すると、ここに検証結果が表示されます。</div>';
+    return;
+  }
+  const latest = DRAWS[DRAWS.length-1];
+  box.innerHTML = arr.map((nums,i) => {
+    const rank = judge(nums, latest);
+    return `<div class="saved-item">
+      <div class="saved-nums">${nums.map(n =>
+        `<span class="${latest.nums.includes(n)?'hit':(n===latest.bonus?'bhit':'')}">${n}</span>`
+      ).join('')}</div>
+      <span class="result-badge ${rank?'win':''}">${rank ? rank+'等' : 'はずれ'}</span>
+      <button class="del-btn" onclick="deletePrediction(${i})" title="削除">×</button>
+    </div>`;
+  }).join('') + `<div class="hint">第${latest.kai}回(${latest.date})との照合結果です。</div>`;
+
+  renderBacktest(arr);
+}
+
+function renderBacktest(arr) {
+  document.getElementById('backtestArea').innerHTML = arr.map((nums, i) => {
+    const cnt = [0,0,0,0,0,0];
+    DRAWS.forEach(d => { const r = judge(nums, d); if (r) cnt[r]++; });
+    const total = cnt[1]+cnt[2]+cnt[3]+cnt[4]+cnt[5];
+    return `<div class="saved-item" style="flex-direction:column;align-items:flex-start;gap:6px">
+      <div class="saved-nums">${nums.map(n=>`<span>${n}</span>`).join('')}</div>
+      <div style="font-size:12px;color:var(--text-muted)">
+        1等 ${cnt[1]} / 2等 ${cnt[2]} / 3等 ${cnt[3]} / 4等 ${cnt[4]} / 5等 ${cnt[5]}
+        <span class="rank-sub">(全${DRAWS.length}回中 ${total}回的中)</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ============ タブ ============ */
+function switchTab(el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById(el.dataset.panel).classList.add('active');
+  if (typeof gtag === 'function') gtag('event', 'member_tab', { event_label: el.dataset.panel });
+}
+</script>
+</body>
+</html>
