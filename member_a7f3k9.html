@@ -273,6 +273,14 @@
     padding: 2px 8px; border-radius: 10px; margin-left: 6px;
     background: var(--blue-light); color: var(--blue); vertical-align: middle;
   }
+  .backtest-row {
+    display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+    margin-top: 8px; padding: 7px 10px;
+    background: var(--surface2); border-radius: var(--radius-sm);
+  }
+  .backtest-label { font-size: 10.5px; color: var(--text-faint); }
+  .backtest-val { font-size: 12.5px; font-weight: 600; color: var(--text); }
+  .backtest-note { font-size: 10.5px; color: var(--text-faint); }
   .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .demoku-table { border-collapse: collapse; font-size: 11px; width: 100%; }
   .demoku-table th, .demoku-table td {
@@ -978,8 +986,28 @@
           <span class="meta-chip">奇数 ${r.oddCnt} / 偶数 ${6 - r.oddCnt}</span>
           ${consecChip}
         </div>
+        ${backtestHtml(r.nums)}
       </div>${div}`;
-    }).join('');
+    }).join('') + `<p class="source-note">「過去実績」は、その組み合わせを第1回から全回購入していた場合の集計です。抽せんは毎回独立しているため、過去の結果が次回の当せんやすさを示すものではありません。</p>`;
+  }
+
+  // この組み合わせを第1回から買い続けていたら何等が何回当たっていたか
+  function backtestHtml(nums) {
+    if (!drawData || !drawData.draws.length) return '';
+    const cnt = [0, 0, 0, 0, 0, 0];
+    drawData.draws.forEach(d => {
+      const g = judge(nums, d).grade;
+      if (g) cnt[g]++;
+    });
+    const total = cnt[1] + cnt[2] + cnt[3] + cnt[4] + cnt[5];
+    const parts = [];
+    for (let g = 1; g <= 5; g++) if (cnt[g]) parts.push(`${g}等 ${cnt[g]}回`);
+    const detail = parts.length ? parts.join(' / ') : '当せんなし';
+    return `<div class="backtest-row">
+      <span class="backtest-label">この組み合わせの過去実績</span>
+      <span class="backtest-val">${detail}</span>
+      <span class="backtest-note">全${drawData.draws.length}回中 ${total}回</span>
+    </div>`;
   }
 
   function showErr(msg) {
@@ -1247,7 +1275,7 @@
   }
 
   function renderDemoku(draws) {
-    const list = draws.slice(-30).reverse();
+    const list = draws.slice(-30);
     let html = '<tr><th>回</th>';
     for (let n = 1; n <= 43; n++) html += `<th>${n}</th>`;
     html += '</tr>';
@@ -1263,10 +1291,10 @@
     document.getElementById('demokuTable').innerHTML = html;
   }
 
-  const ZONES = [[1, 9, '1〜9'], [10, 19, '10代'], [20, 29, '20代'], [30, 39, '30代'], [40, 43, '40〜43']];
+  const ZONES = [[1, 9, '1〜9'], [10, 19, '10台'], [20, 29, '20台'], [30, 39, '30台'], [40, 43, '40〜43']];
 
   function renderKeta(draws) {
-    const list = draws.slice(-30).reverse();
+    const list = draws.slice(-30);
     let html = '<tr><th>回</th>' + ZONES.map(z => `<th>${z[2]}</th>`).join('') + '</tr>';
     list.forEach(d => {
       html += `<tr><td class="kai">${d.no}</td>`;
