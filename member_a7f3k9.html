@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ロト6データラボ メンバー版</title>
+<title>ロト6 予想ツール</title>
 
-<!-- Google tag (gtag.js) -->
+<!-- Google tag (gtag.js) : ロト6データラボ アクセス解析 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-91G6P796K2"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -13,7 +13,6 @@
   gtag('js', new Date());
   gtag('config', 'G-91G6P796K2');
 </script>
-
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -30,8 +29,6 @@
     --blue-mid: #B5D4F4;
     --red: #A32D2D;
     --red-light: #FCEBEB;
-    --gold: #B8860B;
-    --gold-light: #FDF6E3;
     --radius: 10px;
     --radius-sm: 6px;
   }
@@ -40,641 +37,1478 @@
     font-family: 'Helvetica Neue', Arial, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.6;
-    padding: 1.5rem 1rem 3rem;
-    -webkit-text-size-adjust: 100%;
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
   }
 
-  /* ===== 認証画面 ===== */
+  header { text-align: center; margin-bottom: 2.5rem; }
+  header h1 { font-size: 26px; font-weight: 700; letter-spacing: -0.5px; }
+  header p { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+  .container { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+  }
+
+  .card-title {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--text-muted); text-transform: uppercase; margin-bottom: 1rem;
+  }
+
+  /* Number grids */
+  .num-grid { display: flex; flex-wrap: wrap; gap: 7px; }
+
+  .num-btn {
+    width: 38px; height: 38px; border-radius: 50%;
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--text); font-size: 13px; font-weight: 500;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: background 0.1s, border-color 0.1s, color 0.1s, transform 0.08s;
+    user-select: none;
+  }
+  .num-btn:hover { background: #ECEAE5; transform: scale(1.05); }
+  .num-btn:active { transform: scale(0.96); }
+  .num-btn.selected-fixed { background: var(--blue); border-color: var(--blue); color: #fff; font-weight: 600; }
+  .num-btn.selected-banned { background: var(--red); border-color: var(--red); color: #fff; font-weight: 600; }
+  .num-btn.disabled-btn { opacity: 0.28; cursor: not-allowed; pointer-events: none; }
+
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; min-height: 26px; }
+  .chip { font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 500; }
+  .chip-fixed { background: var(--blue-light); color: var(--blue); }
+  .chip-banned { background: var(--red-light); color: var(--red); }
+  .chip-none { font-size: 12px; color: var(--text-faint); }
+
+  /* Condition rows */
+  .cond-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cond-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .cond-row:first-child { padding-top: 0; }
+
+  /* Toggle switch */
+  .toggle-wrap { flex-shrink: 0; }
+  .toggle {
+    position: relative; display: inline-block;
+    width: 36px; height: 20px; cursor: pointer;
+  }
+  .toggle input { opacity: 0; width: 0; height: 0; position: absolute; }
+  .toggle-track {
+    position: absolute; inset: 0;
+    background: var(--border); border-radius: 20px;
+    transition: background 0.2s;
+  }
+  .toggle input:checked ~ .toggle-track { background: var(--blue); }
+  .toggle-thumb {
+    position: absolute; top: 3px; left: 3px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #fff; transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+  }
+  .toggle input:checked ~ .toggle-thumb { transform: translateX(16px); }
+
+  .cond-label {
+    font-size: 13px; color: var(--text); font-weight: 500;
+    min-width: 160px; flex-shrink: 0;
+  }
+  .cond-label.off { color: var(--text-faint); }
+
+  .cond-controls { display: flex; flex-direction: column; align-items: stretch; gap: 8px; flex: 1; }
+  .cond-controls.off { opacity: 0.35; pointer-events: none; }
+
+  .auto-fill-row { margin-bottom: 1rem; }
+  .auto-fill-btn {
+    width: 100%; padding: 10px 14px; background: var(--blue-light);
+    border: 1px solid var(--blue-mid); border-radius: var(--radius-sm);
+    color: var(--blue); font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: background 0.1s; line-height: 1.5;
+  }
+  .auto-fill-btn:hover { background: var(--blue-mid); }
+  .auto-fill-btn:active { transform: scale(0.99); }
+  .auto-fill-sub {
+    display: block; font-size: 11px; font-weight: 500;
+    color: var(--blue); opacity: 0.75; margin-top: 2px;
+  }
+
+  /* 過去の傾向ヒント */
+  .stat-hint { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .stat-hint-label { font-size: 11px; color: var(--text-faint); margin-right: 2px; }
+  .stat-pill {
+    font-size: 11.5px; font-weight: 600; padding: 3px 9px; border-radius: 20px;
+    background: var(--blue-light); color: var(--blue); border: none; cursor: pointer;
+    white-space: nowrap; transition: background 0.1s, transform 0.08s;
+  }
+  .stat-pill:hover { background: var(--blue-mid); }
+  .stat-pill:active { transform: scale(0.96); }
+  .stat-text { font-size: 11.5px; color: var(--text-muted); }
+
+  @media (max-width: 480px) {
+    .cond-row { flex-wrap: wrap; }
+    .cond-label { min-width: 0; flex: 1 1 auto; }
+    .cond-controls { flex: 1 1 100%; margin-left: 48px; width: calc(100% - 48px); }
+  }
+
+  .range-row { display: flex; align-items: center; gap: 8px; flex: 1; }
+  .range-row input[type=range] { flex: 1; accent-color: var(--blue); cursor: pointer; }
+  .range-val { min-width: 20px; text-align: right; font-size: 14px; font-weight: 600; }
+
+  .sum-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sum-row input[type=number] {
+    width: 70px; padding: 5px 8px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--surface2); color: var(--text);
+    font-size: 14px; font-weight: 500; text-align: center;
+  }
+  .sum-row input[type=number]:focus { outline: 2px solid var(--blue-mid); border-color: var(--blue); }
+  .sep { font-size: 13px; color: var(--text-muted); }
+
+  /* Checkbox row (consecutive) */
+  .check-group { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .check-label {
+    display: flex; align-items: center; gap: 7px;
+    font-size: 13px; cursor: pointer; user-select: none;
+    color: var(--text-muted);
+  }
+  .check-label input[type=checkbox] {
+    width: 16px; height: 16px; accent-color: var(--blue); cursor: pointer;
+  }
+  .check-label span { font-weight: 500; }
+
+  /* Generate */
+  .gen-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .set-select {
+    padding: 10px 14px; border: 1px solid var(--border);
+    border-radius: var(--radius-sm); background: var(--surface2);
+    color: var(--text); font-size: 14px; cursor: pointer;
+  }
+  .gen-btn {
+    flex: 1; padding: 12px 24px; background: var(--blue);
+    color: #fff; border: none; border-radius: var(--radius-sm);
+    font-size: 15px; font-weight: 600; cursor: pointer;
+    letter-spacing: 0.02em; transition: background 0.1s, transform 0.08s;
+  }
+  .gen-btn:hover { background: #0F4A87; }
+  .gen-btn:active { transform: scale(0.98); }
+  .reset-link {
+    font-size: 12px; color: var(--text-faint); background: none; border: none;
+    cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+    padding: 0; white-space: nowrap;
+  }
+  .reset-link:hover { color: var(--text-muted); }
+
+  /* Results */
+  #resultArea { display: none; }
+  #resultArea.show { display: block; }
+  .result-header {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    color: var(--text-muted); text-transform: uppercase; margin-bottom: 1rem;
+  }
+  .result-set { margin-bottom: 1.25rem; }
+  .result-set:last-child { margin-bottom: 0; }
+  .set-label { font-size: 11px; color: var(--text-faint); margin-bottom: 8px; font-weight: 500; }
+  .result-nums { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .rn {
+    width: 44px; height: 44px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 600;
+  }
+  .rn-normal { background: var(--surface2); border: 1px solid var(--border); color: var(--text); }
+  .rn-fixed { background: var(--blue); color: #fff; }
+  .meta-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .meta-chip {
+    font-size: 11px; color: var(--text-muted); background: var(--surface2);
+    border: 1px solid var(--border); padding: 2px 9px; border-radius: 20px;
+  }
+  .divider { height: 1px; background: var(--border); margin: 1rem 0; }
+  .err { font-size: 13px; color: var(--red); padding: 10px 0; font-weight: 500; }
+
+  /* ===== 追加機能: 共通ボタン ===== */
+  .mini-btn {
+    font-size: 12px; font-weight: 600; padding: 5px 11px;
+    border-radius: var(--radius-sm); border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer;
+    white-space: nowrap; transition: background 0.1s, border-color 0.1s, color 0.1s;
+    font-family: inherit;
+  }
+  .mini-btn:hover { background: var(--surface2); }
+  .mini-btn.primary { background: var(--blue-light); border-color: var(--blue-mid); color: var(--blue); }
+  .mini-btn.primary:hover { background: var(--blue-mid); }
+  .mini-btn.done { background: var(--surface2); color: var(--text-muted); border-color: var(--border); cursor: default; }
+  .mini-btn.danger { color: var(--red); }
+  .mini-btn.danger:hover { background: var(--red-light); border-color: #F0C8C8; }
+  .mini-btn:focus-visible, .icon-btn:focus-visible, .gen-btn:focus-visible, .num-btn:focus-visible {
+    outline: 2px solid var(--blue); outline-offset: 2px;
+  }
+  .icon-btn {
+    width: 28px; height: 28px; border-radius: 50%; border: none; background: none;
+    color: var(--text-faint); font-size: 16px; line-height: 1; cursor: pointer; flex-shrink: 0;
+    font-family: inherit;
+  }
+  .icon-btn:hover { background: var(--red-light); color: var(--red); }
+
+  /* ===== 最新の当せん番号 ===== */
+  .latest-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .latest-draw { font-size: 15px; font-weight: 700; }
+  .latest-date { font-size: 12.5px; color: var(--text-muted); margin-left: 6px; font-weight: 500; }
+  .latest-balls { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .ball {
+    width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; background: var(--text); color: #fff;
+  }
+  .ball-bonus { background: var(--surface); color: var(--red); border: 2px solid var(--red); }
+  .bonus-label { font-size: 11px; color: var(--text-muted); margin-left: 4px; }
+  .latest-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .meta-chip.strong { color: var(--blue); background: var(--blue-light); border-color: var(--blue-mid); font-weight: 600; }
+  .source-note { font-size: 11px; color: var(--text-faint); margin-top: 10px; }
+  .source-note a { color: var(--text-muted); }
+
+  /* ===== メンバー限定の分析 ===== */
+  .member-tag {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px; margin-left: 6px;
+    background: var(--blue-light); color: var(--blue); vertical-align: middle;
+  }
+  .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .demoku-table { border-collapse: collapse; font-size: 11px; width: 100%; }
+  .demoku-table th, .demoku-table td {
+    padding: 3px 2px; text-align: center;
+    border: 1px solid var(--border); white-space: nowrap;
+  }
+  .demoku-table th {
+    background: var(--surface2); font-weight: 600;
+    font-size: 10px; color: var(--text-muted);
+  }
+  .demoku-table td.kai { color: var(--text-muted); font-size: 10px; }
+  .dot-main, .dot-bonus {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  }
+  .dot-main { background: var(--blue); }
+  .dot-bonus { background: #B8860B; }
+
+  .gosata-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px; background: var(--surface2);
+    border-radius: var(--radius-sm); margin-bottom: 6px; font-size: 13px;
+  }
+  .gosata-pos { font-size: 11px; color: var(--text-faint); min-width: 26px; }
+  .gosata-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 28px; height: 28px; border-radius: 50%;
+    background: var(--text-muted); color: #fff; font-weight: 700; font-size: 13px;
+  }
+  .gosata-info { flex: 1; font-size: 12.5px; }
+  .gosata-sub { font-size: 11px; color: var(--text-faint); }
+
+  .trend-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px;
+  }
+  .trend-box { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .trend-label { font-size: 11px; color: var(--text-muted); }
+  .trend-val { font-size: 16px; font-weight: 700; margin-top: 2px; }
+  .trend-note { font-size: 10.5px; color: var(--text-faint); }
+  .trend-head {
+    font-size: 12px; font-weight: 700; color: var(--text-muted);
+    margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border);
+  }
+  .trend-head:first-child { margin-top: 0; }
+  .muted-msg { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+  /* ===== 予想結果のアクション ===== */
+  .result-head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .result-head-row .result-header { margin-bottom: 0; }
+  .result-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .save-target { font-size: 12px; color: var(--text-muted); margin: -4px 0 14px; }
+  .set-label-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .set-label-row .set-label { margin-bottom: 0; }
+  .set-actions { display: flex; gap: 6px; }
+
+  /* ===== 予想履歴 ===== */
+  .history-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .history-head .card-title { margin-bottom: 0; }
+  .history-summary { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .h-group { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
+  .h-group:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+  .h-group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .h-group-title { font-size: 13px; font-weight: 700; }
+  .h-group-status { font-size: 12px; color: var(--text-muted); }
+  .h-group-status.win { color: var(--blue); font-weight: 600; }
+  .h-group-draw { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; font-size: 11px; color: var(--text-muted); }
+  .h-group-draw .sball { width: 24px; height: 24px; font-size: 11px; }
+  .h-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+  .h-nums { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; }
+  .sball {
+    width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12.5px; font-weight: 600; background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  }
+  .sball.draw { background: var(--text); border-color: var(--text); color: #fff; }
+  .sball.draw-bonus { background: var(--surface); border: 2px solid var(--red); color: var(--red); }
+  .sball.hit { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .sball.bonus-hit { background: var(--surface); border: 2px solid var(--red); color: var(--red); }
+  .h-result { font-size: 12px; min-width: 88px; text-align: right; color: var(--text-muted); line-height: 1.35; }
+  .h-result .grade { display: inline-block; font-weight: 700; color: #fff; background: var(--blue); border-radius: 20px; padding: 2px 9px; }
+  .h-result .amount { display: block; font-size: 11px; color: var(--blue); font-weight: 600; margin-top: 2px; }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--text-muted); margin-top: 14px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend .sball { width: 16px; height: 16px; font-size: 0; }
+  @media (max-width: 480px) {
+    .h-row { flex-wrap: wrap; row-gap: 4px; }
+    .h-nums { flex: 1 1 100%; flex-wrap: nowrap; }
+    .h-result { text-align: left; min-width: 0; flex: 1; }
+    .h-result br { display: none; }
+    .h-result .amount { display: inline; margin: 0 0 0 6px; }
+  }
+
+  /* トースト */
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 16px);
+    background: var(--text); color: #fff; font-size: 13px; font-weight: 500;
+    padding: 10px 18px; border-radius: 20px; opacity: 0; pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s; z-index: 100; max-width: calc(100% - 32px); text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  @media (prefers-reduced-motion: reduce) {
+    .toast, .num-btn, .gen-btn, .mini-btn { transition: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 合言葉認証 -->
+<div class="gate" id="memberGate">
+  <h2>ロト6データラボ メンバー版</h2>
+  <p>メンバー限定ツールです。<br>合言葉を入力してください。</p>
+  <input type="password" id="memberPw" placeholder="合言葉" autocomplete="off">
+  <button type="button" onclick="checkMemberPw()">入る</button>
+  <div class="gate-err" id="memberPwErr"></div>
+  <div class="gate-note">
+    合言葉はメンバー限定記事に記載しています。<br>
+    メンバーシップについては<a href="【メンバーシップ案内のURL】" target="_blank" rel="noopener">こちら</a>
+  </div>
+</div>
+
+<style>
   .gate {
-    max-width: 420px; margin: 4rem auto; padding: 2rem 1.5rem;
+    max-width: 400px; margin: 4rem auto; padding: 2rem 1.5rem;
     background: var(--surface); border: 1px solid var(--border);
     border-radius: var(--radius); text-align: center;
   }
-  .gate h1 { font-size: 20px; margin-bottom: 8px; }
+  .gate h2 { font-size: 19px; margin-bottom: 8px; }
   .gate p { font-size: 13px; color: var(--text-muted); margin-bottom: 1.5rem; }
   .gate input {
     width: 100%; padding: 12px; font-size: 16px; text-align: center;
     border: 1px solid var(--border); border-radius: var(--radius-sm);
-    margin-bottom: 12px; background: var(--surface2);
+    margin-bottom: 12px; background: var(--surface2); font-family: inherit;
   }
   .gate input:focus { outline: 2px solid var(--blue-mid); border-color: var(--blue); }
   .gate button {
     width: 100%; padding: 12px; font-size: 15px; font-weight: 600;
     background: var(--blue); color: #fff; border: none;
-    border-radius: var(--radius-sm); cursor: pointer;
+    border-radius: var(--radius-sm); cursor: pointer; font-family: inherit;
   }
-  .gate .err { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 20px; }
-  .gate .note { font-size: 11.5px; color: var(--text-faint); margin-top: 1.5rem; line-height: 1.7; }
-
-  /* ===== 本体 ===== */
-  #app { display: none; max-width: 720px; margin: 0 auto; }
-
-  header { text-align: center; margin-bottom: 1.25rem; }
-  header h1 { font-size: 19px; font-weight: 700; letter-spacing: 0.02em; }
-  header .sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-  .latest-bar {
-    background: var(--blue-light); border: 1px solid var(--blue-mid);
-    border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 1.25rem;
-    font-size: 13px;
-  }
-  .latest-bar .label { font-size: 11px; color: var(--blue); font-weight: 700; }
-  .latest-nums { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
-  .latest-nums .n {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 32px; height: 32px; border-radius: 50%;
-    background: var(--surface); border: 1.5px solid var(--blue);
-    color: var(--blue); font-weight: 700; font-size: 14px;
-  }
-  .latest-nums .n.bonus { border-color: var(--gold); color: var(--gold); border-style: dashed; }
-  .latest-meta { font-size: 11.5px; color: var(--text-muted); margin-top: 8px; }
-
-  /* タブ */
-  .tabs {
-    display: flex; gap: 4px; margin-bottom: 1rem;
-    overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px;
-  }
-  .tab {
-    flex-shrink: 0; padding: 9px 14px; font-size: 13px; font-weight: 600;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 20px; color: var(--text-muted); cursor: pointer;
-    white-space: nowrap;
-  }
-  .tab.active { background: var(--blue); border-color: var(--blue); color: #fff; }
-
-  .panel { display: none; }
-  .panel.active { display: block; }
-
-  .card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem;
-  }
-  .card-title {
-    font-size: 13px; font-weight: 700; margin-bottom: 0.75rem;
-    padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);
-  }
-  .hint { font-size: 11.5px; color: var(--text-faint); margin-top: 8px; line-height: 1.6; }
-
-  /* 表 */
-  .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  table { border-collapse: collapse; font-size: 12px; width: 100%; }
-  th, td { padding: 5px 6px; text-align: center; border: 1px solid var(--border); white-space: nowrap; }
-  th { background: var(--surface2); font-weight: 600; font-size: 11px; color: var(--text-muted); }
-  td.kai { color: var(--text-muted); font-size: 11px; }
-
-  /* 出目表のドット */
-  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--blue); }
-  .dot.bonus { background: var(--gold); }
-  .demoku td { padding: 3px 2px; }
-  .demoku th { padding: 3px 2px; font-size: 10px; }
-
-  /* ランキング */
-  .rank-list { display: flex; flex-direction: column; gap: 6px; }
-  .rank-row {
-    display: flex; align-items: center; gap: 10px; padding: 8px 10px;
-    background: var(--surface2); border-radius: var(--radius-sm); font-size: 13px;
-  }
-  .rank-pos { font-size: 11px; color: var(--text-faint); min-width: 28px; }
-  .rank-num {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 30px; height: 30px; border-radius: 50%;
-    background: var(--blue); color: #fff; font-weight: 700; font-size: 13px;
-  }
-  .rank-num.cold { background: var(--text-muted); }
-  .rank-info { flex: 1; font-size: 12.5px; }
-  .rank-sub { font-size: 11px; color: var(--text-faint); }
-
-  /* 統計 */
-  .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; }
-  .stat-box { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; }
-  .stat-label { font-size: 11px; color: var(--text-muted); }
-  .stat-val { font-size: 17px; font-weight: 700; margin-top: 2px; }
-  .stat-note { font-size: 10.5px; color: var(--text-faint); }
-
-  /* 数字グリッド(予想入力) */
-  .num-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-  .num-btn {
-    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: var(--radius-sm); font-size: 13px; font-weight: 600;
-    cursor: pointer; user-select: none; color: var(--text);
-  }
-  .num-btn.on { background: var(--blue); border-color: var(--blue); color: #fff; }
-
-  .btn-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-  .btn {
-    flex: 1; min-width: 120px; padding: 11px 14px; font-size: 14px; font-weight: 600;
-    border-radius: var(--radius-sm); cursor: pointer; border: 1px solid var(--blue);
-    background: var(--blue); color: #fff;
-  }
-  .btn.sub { background: var(--surface); color: var(--blue); }
-  .btn:active { transform: scale(0.99); }
-
-  .saved-item {
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-    padding: 10px; background: var(--surface2);
-    border-radius: var(--radius-sm); margin-bottom: 8px; font-size: 13px;
-  }
-  .saved-nums { display: flex; gap: 4px; flex-wrap: wrap; flex: 1; }
-  .saved-nums span {
-    display: inline-flex; align-items: center; justify-content: center;
-    min-width: 26px; height: 26px; border-radius: 50%;
-    background: var(--surface); border: 1px solid var(--border);
-    font-size: 12px; font-weight: 600;
-  }
-  .saved-nums span.hit { background: var(--blue); border-color: var(--blue); color: #fff; }
-  .saved-nums span.bhit { background: var(--gold-light); border-color: var(--gold); color: var(--gold); }
-  .del-btn {
-    background: none; border: none; color: var(--text-faint);
-    font-size: 18px; cursor: pointer; padding: 0 4px; line-height: 1;
-  }
-  .result-badge {
-    font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 12px;
-    background: var(--surface); border: 1px solid var(--border); color: var(--text-muted);
-  }
-  .result-badge.win { background: var(--red-light); border-color: var(--red); color: var(--red); }
-
-  .loading { text-align: center; padding: 3rem 1rem; color: var(--text-muted); font-size: 13px; }
-  .error-box {
-    background: var(--red-light); border: 1px solid var(--red);
-    border-radius: var(--radius-sm); padding: 12px; font-size: 13px; color: var(--red);
-  }
-
-  footer {
-    margin-top: 2rem; padding-top: 1.25rem; border-top: 1px solid var(--border);
-    text-align: center; font-size: 11.5px; color: var(--text-faint); line-height: 1.7;
-  }
-  footer a { color: var(--blue); text-decoration: none; }
+  .gate-err { color: var(--red); font-size: 13px; margin-top: 10px; min-height: 20px; }
+  .gate-note { font-size: 11.5px; color: var(--text-faint); margin-top: 1.5rem; line-height: 1.7; }
+  .gate-note a { color: var(--blue); }
+  #memberContent { display: none; }
 </style>
-</head>
-<body>
 
-<!-- 認証画面 -->
-<div class="gate" id="gate">
-  <h1>ロト6データラボ メンバー版</h1>
-  <p>メンバー限定ツールです。<br>合言葉を入力してください。</p>
-  <input type="password" id="pw" placeholder="合言葉" autocomplete="off">
-  <button onclick="checkPw()">入る</button>
-  <div class="err" id="pwErr"></div>
-  <div class="note">
-    合言葉はメンバー限定記事に記載しています。<br>
-    メンバーシップについては<a href="【メンバーシップ案内のURL】" target="_blank" rel="noopener" style="color:var(--blue)">こちら</a>
-  </div>
+<div id="memberContent">
+
+<div class="trust-bar">
+  <span class="trust-dot"></span>
+  <span class="trust-text"><strong>ロト6データラボ</strong>メンバー限定ツールです。データの外部送信はありません</span>
 </div>
 
-<!-- 本体 -->
-<div id="app">
-  <header>
-    <h1>ロト6データラボ メンバー版</h1>
-    <div class="sub" id="dataRange">データ読み込み中…</div>
-  </header>
+<header>
+  <h1>ロト6 予想ツール</h1>
+  <p>条件を設定して、予想番号を生成します</p>
+  <a class="guide-link" href="https://note.com/profit_0707/n/n4eb58438a1c2" target="_blank" rel="noopener">初めての方はこちら:使い方ガイド →</a>
+</header>
 
-  <div class="latest-bar" id="latestBar"></div>
+<div class="step-guide">
+  <div class="step"><span class="step-num">1</span>条件を選ぶ(迷ったら「過去の傾向」を押すだけでOK)</div>
+  <div class="step-arrow">→</div>
+  <div class="step"><span class="step-num">2</span>セット数を選ぶ</div>
+  <div class="step-arrow">→</div>
+  <div class="step"><span class="step-num">3</span>「予想を生成」を押す</div>
+</div>
 
-  <div class="tabs">
-    <div class="tab active" data-panel="p-rank" onclick="switchTab(this)">ランキング</div>
-    <div class="tab" data-panel="p-demoku" onclick="switchTab(this)">出目表</div>
-    <div class="tab" data-panel="p-keta" onclick="switchTab(this)">桁別</div>
-    <div class="tab" data-panel="p-trend" onclick="switchTab(this)">直近の傾向</div>
-    <div class="tab" data-panel="p-my" onclick="switchTab(this)">マイ予想</div>
+<style>
+  .step-guide {
+    max-width: 720px; margin: 0 auto 1.5rem; padding: 12px 16px;
+    display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+    gap: 8px; background: var(--surface2); border-radius: var(--radius-sm);
+    font-size: 12px; color: var(--text-muted);
+  }
+  .step { display: flex; align-items: center; gap: 6px; }
+  .step-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 18px; height: 18px; border-radius: 50%; background: var(--blue);
+    color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .step-arrow { color: var(--text-faint); font-size: 11px; }
+  @media (max-width: 480px) {
+    .step-guide { flex-direction: column; align-items: flex-start; gap: 6px; }
+    .step-arrow { display: none; }
+  }
+</style>
+
+<style>
+  .trust-bar {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    max-width: 720px; margin: 0 auto 1.5rem; padding: 10px 16px;
+    background: var(--blue-light); border: 1px solid var(--blue-mid);
+    border-radius: var(--radius-sm); font-size: 12.5px; color: var(--text);
+  }
+  .trust-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--blue);
+    flex-shrink: 0;
+  }
+  .trust-text strong { color: var(--blue); }
+  .guide-link {
+    display: inline-block; margin-top: 10px; font-size: 12.5px; font-weight: 600;
+    color: var(--blue); text-decoration: none; border-bottom: 1px solid var(--blue-mid);
+    padding-bottom: 2px;
+  }
+  .guide-link:hover { border-bottom-color: var(--blue); }
+</style>
+
+<div class="container">
+
+  <!-- 最新の当せん番号 -->
+  <div class="card" id="latestCard">
+    <div class="card-title">最新の当せん番号</div>
+    <div id="latestBody"><p class="muted-msg">当せん番号を読み込んでいます…</p></div>
   </div>
 
-  <!-- ランキング -->
-  <div class="panel active" id="p-rank">
-    <div class="card">
-      <div class="card-title">ご無沙汰数字 TOP10</div>
-      <div class="rank-list" id="gosataList"></div>
-      <div class="hint">最後に出てから何回経過したかの順位です。カッコ内はその数字の自己最長記録。</div>
-    </div>
-    <div class="card">
-      <div class="card-title">よく出ている数字 TOP10(直近100回)</div>
-      <div class="rank-list" id="hotList"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">出ていない数字 WORST10(直近100回)</div>
-      <div class="rank-list" id="coldList"></div>
-      <div class="hint">抽せんは毎回独立しているので、これらの数字が次回出やすい/出にくいということはありません。</div>
-    </div>
+  <!-- Fixed numbers -->
+  <div class="card">
+    <div class="card-title">固定数字 — 必ず含める</div>
+    <div class="num-grid" id="fixedGrid"></div>
+    <div class="chip-row" id="fixedChips"><span class="chip-none">未選択</span></div>
   </div>
 
-  <!-- 出目表 -->
-  <div class="panel" id="p-demoku">
-    <div class="card">
-      <div class="card-title">出目表(直近30回)</div>
-      <div class="scroll-x"><table class="demoku" id="demokuTable"></table></div>
-      <div class="hint">● 本数字 / ● ボーナス数字。横スクロールできます。</div>
-    </div>
+  <!-- Banned numbers -->
+  <div class="card">
+    <div class="card-title">禁止数字 — 除外する</div>
+    <div class="num-grid" id="bannedGrid"></div>
+    <div class="chip-row" id="bannedChips"><span class="chip-none">未選択</span></div>
   </div>
 
-  <!-- 桁別 -->
-  <div class="panel" id="p-keta">
-    <div class="card">
-      <div class="card-title">桁別出目表(直近30回)</div>
-      <div class="scroll-x"><table id="ketaTable"></table></div>
-      <div class="hint">1〜9 / 10代 / 20代 / 30代 / 40〜43 の5ゾーンから、各回何個出たかを示しています。</div>
-    </div>
-    <div class="card">
-      <div class="card-title">ゾーン別の出現割合</div>
-      <div class="stat-grid" id="ketaStats"></div>
-    </div>
-  </div>
+  <!-- Conditions -->
+  <div class="card">
+    <div class="card-title">当選条件</div>
 
-  <!-- 直近の傾向 -->
-  <div class="panel" id="p-trend">
-    <div class="card">
-      <div class="card-title">直近10回の分析</div>
-      <div class="stat-grid" id="trend10"></div>
+    <div class="auto-fill-row">
+      <button type="button" class="auto-fill-btn" onclick="autoFillRecommended()">おまかせ設定<span class="auto-fill-sub">(過去データの最頻パターンを一括セット)</span></button>
     </div>
-    <div class="card">
-      <div class="card-title">直近50回の分析</div>
-      <div class="stat-grid" id="trend50"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">全期間の分析(参考)</div>
-      <div class="stat-grid" id="trendAll"></div>
-    </div>
-  </div>
 
-  <!-- マイ予想 -->
-  <div class="panel" id="p-my">
-    <div class="card">
-      <div class="card-title">予想数字を選ぶ(6個)</div>
-      <div class="num-grid" id="myGrid"></div>
-      <div class="btn-row">
-        <button class="btn" onclick="savePrediction()">保存する</button>
-        <button class="btn sub" onclick="clearSelection()">選択をクリア</button>
+    <!-- Front count -->
+    <div class="cond-row">
+      <div class="toggle-wrap">
+        <label class="toggle">
+          <input type="checkbox" id="useFront" checked onchange="toggleCond('front')">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
       </div>
-      <div class="hint" id="mySelInfo">0個選択中</div>
+      <span class="cond-label" id="labelFront">前半（1〜21）の個数</span>
+      <div class="cond-controls" id="ctrlFront">
+        <div class="range-row">
+          <input type="range" min="0" max="6" step="1" value="3" id="frontCount"
+            oninput="document.getElementById('frontVal').textContent=this.value">
+          <span class="range-val" id="frontVal">3</span>
+        </div>
+        <div class="stat-hint">
+          <span class="stat-hint-label">過去の傾向:</span>
+          <button type="button" class="stat-pill" onclick="setFrontCount(3, true)">3個 34.8%</button>
+          <button type="button" class="stat-pill" onclick="setFrontCount(2, true)">2個 24.5%</button>
+          <button type="button" class="stat-pill" onclick="setFrontCount(4, true)">4個 21.8%</button>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-title">保存した予想と当せん確認</div>
-      <div id="savedList"></div>
-      <div class="hint">最新の抽せん結果と自動で照合します。この端末のブラウザに保存されるため、他の端末とは共有されません。</div>
+
+    <!-- Odd count -->
+    <div class="cond-row">
+      <div class="toggle-wrap">
+        <label class="toggle">
+          <input type="checkbox" id="useOdd" checked onchange="toggleCond('odd')">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+      <span class="cond-label" id="labelOdd">奇数の個数</span>
+      <div class="cond-controls" id="ctrlOdd">
+        <div class="range-row">
+          <input type="range" min="0" max="6" step="1" value="3" id="oddCount"
+            oninput="document.getElementById('oddVal').textContent=this.value">
+          <span class="range-val" id="oddVal">3</span>
+        </div>
+        <div class="stat-hint">
+          <span class="stat-hint-label">過去の傾向:</span>
+          <button type="button" class="stat-pill" onclick="setOddCount(3, true)">3個 33.0%</button>
+          <button type="button" class="stat-pill" onclick="setOddCount(4, true)">4個 24.8%</button>
+          <button type="button" class="stat-pill" onclick="setOddCount(2, true)">2個 24.2%</button>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-title">過去の全抽せんで検証</div>
-      <div id="backtestArea"></div>
-      <div class="hint">保存した予想を第1回から買い続けた場合、何等が何回当たっていたかを集計します。過去の結果が将来を示すものではありません。</div>
+
+    <!-- Sum range -->
+    <div class="cond-row">
+      <div class="toggle-wrap">
+        <label class="toggle">
+          <input type="checkbox" id="useSum" checked onchange="toggleCond('sum')">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+      <span class="cond-label" id="labelSum">合計値の範囲</span>
+      <div class="cond-controls" id="ctrlSum">
+        <div class="sum-row">
+          <input type="number" id="sumMin" value="70" min="21" max="258">
+          <span class="sep">〜</span>
+          <input type="number" id="sumMax" value="180" min="21" max="258">
+        </div>
+        <div class="stat-hint">
+          <span class="stat-hint-label">過去の傾向:</span>
+          <button type="button" class="stat-pill" onclick="setSumRange(130,149,true)">130〜149 27.0%</button>
+          <button type="button" class="stat-pill" onclick="setSumRange(110,129,true)">110〜129 24.9%</button>
+          <button type="button" class="stat-pill" onclick="setSumRange(150,169,true)">150〜169 16.7%</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Consecutive numbers -->
+    <div class="cond-row">
+      <div class="toggle-wrap">
+        <label class="toggle">
+          <input type="checkbox" id="useConsec" onchange="toggleCond('consec')">
+          <span class="toggle-track"></span>
+          <span class="toggle-thumb"></span>
+        </label>
+      </div>
+      <span class="cond-label off" id="labelConsec">連続数字</span>
+      <div class="cond-controls off" id="ctrlConsec">
+        <div class="check-group">
+          <label class="check-label">
+            <input type="checkbox" id="allowConsec" checked>
+            <span>連続数字を含める</span>
+          </label>
+          <label class="check-label">
+            <input type="checkbox" id="requireConsec">
+            <span>必ず1ペア含める</span>
+          </label>
+        </div>
+        <div class="stat-hint">
+          <span class="stat-text">過去の傾向:連続数字を含む回が54.3%で多数派です</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Generate -->
+  <div class="card">
+    <div class="gen-row">
+      <select class="set-select" id="setCount">
+        <option value="1">1セット</option>
+        <option value="3">3セット</option>
+        <option value="5" selected>5セット</option>
+        <option value="10">10セット</option>
+      </select>
+      <button class="gen-btn" onclick="generate()">予想を生成</button>
+      <button class="reset-link" onclick="resetAll()">全リセット</button>
     </div>
   </div>
 
-  <footer>
-    ロト6データラボ メンバー限定ツール<br>
-    <a href="【note記事1のURL】" target="_blank" rel="noopener">note で分析記事を読む →</a><br><br>
-    本ツールは統計分析を楽しむことを目的としたものであり、当せんを保証するものではありません。
-  </footer>
+  <!-- Results -->
+  <div class="card" id="resultArea">
+    <div class="result-head-row">
+      <div class="result-header">予想結果</div>
+      <div class="result-actions" id="resultActions"></div>
+    </div>
+    <div id="resultBody"></div>
+  </div>
+
+  <!-- 予想履歴 -->
+  <div class="card" id="historyCard">
+    <div class="history-head">
+      <div class="card-title">予想履歴</div>
+      <div class="result-actions" id="historyActions"></div>
+    </div>
+    <div id="historyBody"></div>
+  </div>
+
+  <!-- ===== ここからメンバー限定の分析 ===== -->
+  <div class="card">
+    <div class="card-title">ご無沙汰数字 TOP10 <span class="member-tag">メンバー限定</span></div>
+    <div id="gosataBody"><p class="muted-msg">集計中…</p></div>
+    <p class="source-note">最後に出てから何回経過したかの順位です。カッコ内はその数字の自己最長記録。抽せんは毎回独立しているため、これらの数字が次回出やすい/出にくいということはありません。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">出目表(直近30回) <span class="member-tag">メンバー限定</span></div>
+    <div class="scroll-x"><table class="demoku-table" id="demokuTable"></table></div>
+    <p class="source-note">● 本数字 / ● ボーナス数字。横にスクロールできます。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">桁別出目表(直近30回) <span class="member-tag">メンバー限定</span></div>
+    <div class="scroll-x"><table class="demoku-table" id="ketaTable"></table></div>
+    <div id="ketaStatsBody" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">直近の傾向 <span class="member-tag">メンバー限定</span></div>
+    <div id="trendBody"><p class="muted-msg">集計中…</p></div>
+  </div>
+
 </div>
 
-<div class="loading" id="loading" style="display:none">データを読み込んでいます…</div>
+<!-- Footer: note導線 -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <p class="footer-lead">このツールは「ロト6データラボ」が無料公開しています</p>
+    <p class="footer-sub">毎月最新データに更新されるExcel本格版もあります。メンバーシップは今なら初月無料</p>
+    <a class="footer-link" href="https://note.com/profit_0707/n/n2ce9f6a44290" target="_blank" rel="noopener">note で分析記事を読む →</a>
+  </div>
+</footer>
+
+</div><!-- /#memberContent -->
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<style>
+  .site-footer {
+    margin-top: 32px;
+    padding: 28px 16px 36px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .footer-inner {
+    max-width: 480px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .footer-lead {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .footer-sub {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .footer-link {
+    display: inline-block;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--blue);
+    text-decoration: none;
+    padding: 9px 20px;
+    border: 1px solid var(--blue-mid);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    transition: background 0.15s ease;
+  }
+  .footer-link:hover {
+    background: var(--blue-light);
+  }
+</style>
 
 <script>
-/* ============ 設定 ============ */
-// 合言葉(毎月変更する)。メンバー限定記事に記載した値と一致させる。
-const PASSWORD = '【ここに合言葉を設定】';
-const CSV_PATH = 'loto6.csv';   // 同じフォルダに置いたCSV
+  const fixedState = new Set();
 
-/* ============ 認証 ============ */
-function checkPw() {
-  const v = document.getElementById('pw').value.trim();
-  if (v === PASSWORD) {
-    sessionStorage.setItem('l6auth', '1');
-    enterApp();
-  } else {
-    document.getElementById('pwErr').textContent = '合言葉が違います。';
+  // 過去の傾向ピル:クリックでスライダー/入力値を即セット
+  // track=true のときだけGA4に送信(おまかせ設定からの内部呼び出しと区別するため)
+  function setFrontCount(v, track) {
+    document.getElementById('frontCount').value = v;
+    document.getElementById('frontVal').textContent = v;
+    if (track && typeof gtag === 'function') {
+      gtag('event', 'tool_stat_pill', { event_category: 'engagement', event_label: 'front_' + v });
+    }
   }
-}
-document.getElementById('pw').addEventListener('keydown', e => {
-  if (e.key === 'Enter') checkPw();
-});
+  function setOddCount(v, track) {
+    document.getElementById('oddCount').value = v;
+    document.getElementById('oddVal').textContent = v;
+    if (track && typeof gtag === 'function') {
+      gtag('event', 'tool_stat_pill', { event_category: 'engagement', event_label: 'odd_' + v });
+    }
+  }
+  function setSumRange(min, max, track) {
+    document.getElementById('sumMin').value = min;
+    document.getElementById('sumMax').value = max;
+    if (track && typeof gtag === 'function') {
+      gtag('event', 'tool_stat_pill', { event_category: 'engagement', event_label: 'sum_' + min + '-' + max });
+    }
+  }
 
-function enterApp() {
-  document.getElementById('gate').style.display = 'none';
-  document.getElementById('loading').style.display = 'block';
-  if (typeof gtag === 'function') gtag('event', 'member_tool_open');
-  loadData();
-}
+  // おまかせ設定:過去データの最頻パターンを一括セットし、各トグルをONにする
+  function autoFillRecommended() {
+    if (typeof gtag === 'function') {
+      gtag('event', 'tool_autofill', { event_category: 'engagement', event_label: 'autofill_button' });
+    }
+    ['useFront', 'useOdd', 'useSum'].forEach(id => {
+      document.getElementById(id).checked = true;
+    });
+    toggleCond('front'); toggleCond('odd'); toggleCond('sum');
+    setFrontCount(3);
+    setOddCount(3);
+    setSumRange(130, 149);
+  }
+  const bannedState = new Set();
 
-if (sessionStorage.getItem('l6auth') === '1') enterApp();
+  function initGrid(gridId, stateSet, chipId, cls) {
+    const g = document.getElementById(gridId);
+    for (let i = 1; i <= 43; i++) {
+      const b = document.createElement('button');
+      b.className = 'num-btn';
+      b.textContent = i;
+      b.id = gridId + '_' + i;
+      b.addEventListener('click', () => {
+        if (stateSet.has(i)) {
+          stateSet.delete(i);
+        } else {
+          stateSet.add(i);
+        }
+        syncDisabled();
+        updateChips(chipId, stateSet, cls === 'selected-fixed' ? 'chip-fixed' : 'chip-banned');
+      });
+      g.appendChild(b);
+    }
+  }
 
-/* ============ データ読み込み ============ */
-let DRAWS = [];   // {kai, date, nums[6], bonus}
+  function syncDisabled() {
+    for (let i = 1; i <= 43; i++) {
+      const fb = document.getElementById('fixedGrid_' + i);
+      const bb = document.getElementById('bannedGrid_' + i);
+      if (bannedState.has(i)) {
+        fb.className = 'num-btn disabled-btn';
+      } else if (fixedState.has(i)) {
+        fb.className = 'num-btn selected-fixed';
+      } else {
+        fb.className = 'num-btn';
+      }
+      if (fixedState.has(i)) {
+        bb.className = 'num-btn disabled-btn';
+      } else if (bannedState.has(i)) {
+        bb.className = 'num-btn selected-banned';
+      } else {
+        bb.className = 'num-btn';
+      }
+    }
+  }
 
-async function loadData() {
-  try {
-    const res = await fetch(CSV_PATH);
-    if (!res.ok) throw new Error('CSVが見つかりません');
-    const buf = await res.arrayBuffer();
-    // Shift_JIS / UTF-8 両対応
-    let text;
+  function updateChips(chipId, stateSet, chipClass) {
+    const el = document.getElementById(chipId);
+    const arr = Array.from(stateSet).sort((a, b) => a - b);
+    el.innerHTML = arr.length === 0
+      ? '<span class="chip-none">未選択</span>'
+      : arr.map(n => `<span class="chip ${chipClass}">${n}</span>`).join('');
+  }
+
+  function toggleCond(key) {
+    const map = { front: 'useFront', odd: 'useOdd', sum: 'useSum', consec: 'useConsec' };
+    const checked = document.getElementById(map[key]).checked;
+    const ctrl = document.getElementById('ctrl' + key.charAt(0).toUpperCase() + key.slice(1));
+    const label = document.getElementById('label' + key.charAt(0).toUpperCase() + key.slice(1));
+    ctrl.classList.toggle('off', !checked);
+    label.classList.toggle('off', !checked);
+  }
+
+  function resetAll() {
+    fixedState.clear(); bannedState.clear();
+    syncDisabled();
+    updateChips('fixedChips', fixedState, 'chip-fixed');
+    updateChips('bannedChips', bannedState, 'chip-banned');
+    document.getElementById('useFront').checked = true;
+    document.getElementById('useOdd').checked = true;
+    document.getElementById('useSum').checked = true;
+    document.getElementById('useConsec').checked = false;
+    document.getElementById('allowConsec').checked = true;
+    document.getElementById('requireConsec').checked = false;
+    document.getElementById('frontCount').value = 3;
+    document.getElementById('frontVal').textContent = '3';
+    document.getElementById('oddCount').value = 3;
+    document.getElementById('oddVal').textContent = '3';
+    document.getElementById('sumMin').value = 70;
+    document.getElementById('sumMax').value = 180;
+    document.getElementById('setCount').value = 5;
+    ['Front','Odd','Sum','Consec'].forEach(k => {
+      document.getElementById('ctrl' + k).classList.remove('off');
+      document.getElementById('label' + k).classList.remove('off');
+    });
+    document.getElementById('ctrlConsec').classList.add('off');
+    document.getElementById('labelConsec').classList.add('off');
+    document.getElementById('resultArea').classList.remove('show');
+  }
+
+  function hasConsecutive(arr) {
+    for (let i = 0; i < arr.length - 1; i++) {
+      if (arr[i + 1] - arr[i] === 1) return true;
+    }
+    return false;
+  }
+
+  function shuffle(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function generate() {
+    if (typeof gtag === 'function') {
+      gtag('event', 'tool_generate', { event_category: 'engagement', event_label: 'generate_button' });
+    }
+    const fixed = Array.from(fixedState);
+    const banned = Array.from(bannedState);
+    const useFront = document.getElementById('useFront').checked;
+    const useOdd   = document.getElementById('useOdd').checked;
+    const useSum   = document.getElementById('useSum').checked;
+    const useConsec = document.getElementById('useConsec').checked;
+    const front = parseInt(document.getElementById('frontCount').value);
+    const odd   = parseInt(document.getElementById('oddCount').value);
+    const sumMin = parseInt(document.getElementById('sumMin').value);
+    const sumMax = parseInt(document.getElementById('sumMax').value);
+    const allowConsec   = document.getElementById('allowConsec').checked;
+    const requireConsec = document.getElementById('requireConsec').checked;
+    const sets = parseInt(document.getElementById('setCount').value);
+
+    if (fixed.length > 6) { showErr('固定数字は6個以内にしてください。'); return; }
+    if (useSum && sumMin > sumMax) { showErr('合計値の最小が最大を超えています。'); return; }
+
+    const pool = [];
+    for (let i = 1; i <= 43; i++) {
+      if (!banned.includes(i) && !fixed.includes(i)) pool.push(i);
+    }
+
+    const results = [];
+    let attempts = 0;
+    while (results.length < sets && attempts < 150000) {
+      attempts++;
+      const need = 6 - fixed.length;
+      const shuffled = shuffle([...pool]);
+      const chosen = shuffled.slice(0, need);
+      const combo = [...fixed, ...chosen].sort((a, b) => a - b);
+
+      if (useFront) {
+        const frontCnt = combo.filter(n => n <= 21).length;
+        if (frontCnt !== front) continue;
+      }
+      if (useOdd) {
+        const oddCnt = combo.filter(n => n % 2 === 1).length;
+        if (oddCnt !== odd) continue;
+      }
+      if (useSum) {
+        const sum = combo.reduce((a, b) => a + b, 0);
+        if (sum < sumMin || sum > sumMax) continue;
+      }
+      if (useConsec) {
+        const consec = hasConsecutive(combo);
+        if (!allowConsec && consec) continue;
+        if (requireConsec && !consec) continue;
+      }
+
+      const key = combo.join(',');
+      if (results.find(r => r.key === key)) continue;
+
+      const frontCnt = combo.filter(n => n <= 21).length;
+      const oddCnt   = combo.filter(n => n % 2 === 1).length;
+      const sum      = combo.reduce((a, b) => a + b, 0);
+      const consec   = hasConsecutive(combo);
+      results.push({ nums: combo, sum, frontCnt, oddCnt, consec, key });
+    }
+
+    const area = document.getElementById('resultArea');
+    const body = document.getElementById('resultBody');
+    area.classList.add('show');
+
+    if (results.length === 0) {
+      document.getElementById('resultActions').innerHTML = '';
+      body.innerHTML = '<div class="err">条件に合う組み合わせが見つかりませんでした。<br>条件を少し緩めてみてください。</div>';
+      return;
+    }
+
+    lastResults = results;
+    lastFixed = fixed;
+    renderResults();
+  }
+
+  function renderResults() {
+    const body = document.getElementById('resultBody');
+    const actions = document.getElementById('resultActions');
+    const results = lastResults;
+    const fixed = lastFixed;
+    const target = nextDrawDate();
+    const allSaved = results.every(r => isSaved(r.nums, target));
+    actions.innerHTML = `
+      <button type="button" class="mini-btn" onclick="copyAllResults()">すべてコピー</button>
+      <button type="button" class="mini-btn ${allSaved ? 'done' : 'primary'}" onclick="saveResults()" ${allSaved ? 'disabled' : ''}>${allSaved ? '保存済み' : 'すべて保存'}</button>`;
+
+    body.innerHTML = `<p class="save-target">保存すると ${formatDateJa(target)} 抽選分として履歴に記録し、抽選後に自動で照合します</p>` + results.map((r, i) => {
+      const numsHtml = r.nums.map(n =>
+        `<div class="rn ${fixed.includes(n) ? 'rn-fixed' : 'rn-normal'}">${n}</div>`
+      ).join('');
+      const div = (i < results.length - 1) ? '<div class="divider"></div>' : '';
+      const consecChip = r.consec
+        ? '<span class="meta-chip" style="color:var(--blue);">連続あり</span>'
+        : '<span class="meta-chip">連続なし</span>';
+      const saved = isSaved(r.nums, target);
+      return `<div class="result-set">
+        <div class="set-label-row">
+          <div class="set-label">セット ${i + 1}</div>
+          <div class="set-actions">
+            <button type="button" class="mini-btn" onclick="copyResult(${i})" aria-label="セット${i + 1}をコピー">コピー</button>
+            <button type="button" class="mini-btn ${saved ? 'done' : 'primary'}" onclick="saveResults(${i})" ${saved ? 'disabled' : ''} aria-label="セット${i + 1}を保存">${saved ? '保存済み' : '保存'}</button>
+          </div>
+        </div>
+        <div class="result-nums">${numsHtml}</div>
+        <div class="meta-row">
+          <span class="meta-chip">合計 ${r.sum}</span>
+          <span class="meta-chip">前半 ${r.frontCnt} / 後半 ${6 - r.frontCnt}</span>
+          <span class="meta-chip">奇数 ${r.oddCnt} / 偶数 ${6 - r.oddCnt}</span>
+          ${consecChip}
+        </div>
+      </div>${div}`;
+    }).join('');
+  }
+
+  function showErr(msg) {
+    document.getElementById('resultArea').classList.add('show');
+    document.getElementById('resultActions').innerHTML = '';
+    document.getElementById('resultBody').innerHTML = `<div class="err">${msg}</div>`;
+  }
+
+  /* =========================================================
+     追加機能: コピー / 履歴保存 / 当選照合
+     - 履歴はこのブラウザ内(localStorage)だけに保存し、外部には送信しません
+     - 当せん番号は同じサイト内の loto6_results.json を読み込みます
+       (GitHub Actions がみずほ銀行の公開データから抽選日に自動更新)
+     ========================================================= */
+  const RESULTS_URL = 'loto6.csv';
+  const HISTORY_KEY = 'loto6lab_history_v1';
+  const HISTORY_MAX = 300;
+  const SALES_CUTOFF_MIN = 18 * 60 + 30; // 抽選日の購入締切 18:30
+  const WEEK = ['日', '月', '火', '水', '木', '金', '土'];
+  const DAY_MS = 86400000;
+
+  let lastResults = [];
+  let lastFixed = [];
+  let drawData = null;      // { updated, draws: [...] }
+  let drawLoadFailed = false;
+
+  const pad2 = n => String(n).padStart(2, '0');
+  const yen = n => (n == null ? '' : n.toLocaleString('ja-JP') + '円');
+  const track = (name, label) => {
+    if (typeof gtag === 'function') gtag('event', name, { event_category: 'engagement', event_label: label });
+  };
+
+  // ---- 日付(すべて日本時間で計算) ----
+  function jstNow() {
+    const parts = {};
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+    }).formatToParts(new Date()).forEach(p => { parts[p.type] = p.value; });
+    return { y: +parts.year, m: +parts.month, d: +parts.day, min: (+parts.hour % 24) * 60 + +parts.minute };
+  }
+  const isoToUtc = iso => { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+  const utcToIso = t => { const x = new Date(t); return `${x.getUTCFullYear()}-${pad2(x.getUTCMonth() + 1)}-${pad2(x.getUTCDate())}`; };
+  const isDrawDay = t => { const w = new Date(t).getUTCDay(); return w === 1 || w === 4; };
+
+  // 次に購入できる抽選日(月・木。当日は18:30まで)
+  function nextDrawDate() {
+    const n = jstNow();
+    let t = Date.UTC(n.y, n.m - 1, n.d);
+    if (!(isDrawDay(t) && n.min < SALES_CUTOFF_MIN)) {
+      do { t += DAY_MS; } while (!isDrawDay(t));
+    }
+    return utcToIso(t);
+  }
+  function formatDateJa(iso, withYear) {
+    const t = isoToUtc(iso); const x = new Date(t);
+    return `${withYear ? x.getUTCFullYear() + '年' : ''}${x.getUTCMonth() + 1}月${x.getUTCDate()}日(${WEEK[x.getUTCDay()]})`;
+  }
+
+  // ---- 当せん番号データ(CSVから読み込み) ----
+  async function loadDrawData() {
     try {
-      text = new TextDecoder('shift_jis').decode(buf);
-      if (!text.includes('開催回')) throw new Error('retry');
+      const res = await fetch(RESULTS_URL, { cache: 'no-cache' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const buf = await res.arrayBuffer();
+      // Shift_JIS / UTF-8 の両方に対応
+      let text;
+      try {
+        text = new TextDecoder('shift_jis').decode(buf);
+        if (!text.includes('開催回')) throw new Error('retry-utf8');
+      } catch (e) {
+        text = new TextDecoder('utf-8').decode(buf);
+      }
+      const draws = parseCsvToDraws(text);
+      if (!draws.length) throw new Error('empty');
+      draws.sort((a, b) => a.no - b.no);
+      drawData = { draws, updated: draws[draws.length - 1].date };
     } catch (e) {
-      text = new TextDecoder('utf-8').decode(buf);
+      drawLoadFailed = true;
+      console.warn('当せん番号データを読み込めませんでした:', e);
     }
-    parseCsv(text);
-    render();
-    document.getElementById('loading').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-  } catch (e) {
-    document.getElementById('loading').innerHTML =
-      '<div class="error-box">データの読み込みに失敗しました。<br>' + e.message + '</div>';
+    renderLatest();
+    renderHistory();
+    renderMemberAnalysis();
   }
-}
 
-function parseCsv(text) {
-  const lines = text.split(/\r?\n/).filter(l => l.trim());
-  const header = lines[0].split(',');
-  const idx = name => header.findIndex(h => h.trim() === name);
-  const iKai = idx('開催回'), iDate = idx('日付'), iB = idx('BONUS数字');
-  const iNums = ['第1数字','第2数字','第3数字','第4数字','第5数字','第6数字'].map(idx);
+  // CSV(開催回,日付,第1〜6数字,BONUS数字,…賞金,キャリーオーバー)を既存の draws 形式へ変換
+  function parseCsvToDraws(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    if (!lines.length) return [];
+    const header = lines[0].split(',').map(h => h.trim());
+    const col = name => header.indexOf(name);
+    const iNo = col('開催回'), iDate = col('日付'), iBonus = col('BONUS数字');
+    const iMain = ['第1数字','第2数字','第3数字','第4数字','第5数字','第6数字'].map(col);
+    const iCarry = col('キャリーオーバー');
+    const prizeCols = [1,2,3,4,5].map(g => ({
+      grade: g, amount: col(g + '等賞金'), count: col(g + '等口数')
+    }));
 
-  DRAWS = [];
-  for (let i = 1; i < lines.length; i++) {
-    const c = lines[i].split(',');
-    if (c.length < 9) continue;
-    const nums = iNums.map(j => parseInt(c[j], 10));
-    if (nums.some(isNaN)) continue;
-    DRAWS.push({
-      kai: parseInt(c[iKai], 10),
-      date: (c[iDate] || '').trim(),
-      nums: nums.sort((a,b) => a-b),
-      bonus: parseInt(c[iB], 10)
-    });
-  }
-  DRAWS.sort((a,b) => a.kai - b.kai);
-}
-
-/* ============ 集計ユーティリティ ============ */
-function countIn(list) {
-  const c = {};
-  for (let i = 1; i <= 43; i++) c[i] = 0;
-  list.forEach(d => d.nums.forEach(n => c[n]++));
-  return c;
-}
-function gosataInfo() {
-  const latest = DRAWS[DRAWS.length-1].kai;
-  const info = [];
-  for (let n = 1; n <= 43; n++) {
-    const appear = DRAWS.filter(d => d.nums.includes(n)).map(d => d.kai);
-    if (!appear.length) continue;
-    let maxGap = 0;
-    for (let i = 1; i < appear.length; i++) maxGap = Math.max(maxGap, appear[i]-appear[i-1]);
-    info.push({ n, gap: latest - appear[appear.length-1], maxGap });
-  }
-  info.sort((a,b) => b.gap - a.gap || a.n - b.n);
-  return info;
-}
-function analyze(list) {
-  const n = list.length;
-  if (!n) return null;
-  const sums = list.map(d => d.nums.reduce((a,b)=>a+b,0));
-  const odds = list.map(d => d.nums.filter(x => x%2===1).length);
-  const fronts = list.map(d => d.nums.filter(x => x<=21).length);
-  const consec = list.filter(d => d.nums.some((x,i) => i>0 && x - d.nums[i-1] === 1)).length;
-  const mode = arr => {
-    const c = {}; arr.forEach(v => c[v]=(c[v]||0)+1);
-    return Object.entries(c).sort((a,b)=>b[1]-a[1])[0];
-  };
-  return {
-    n,
-    sumAvg: Math.round(sums.reduce((a,b)=>a+b,0)/n),
-    sumMin: Math.min(...sums), sumMax: Math.max(...sums),
-    oddMode: mode(odds), frontMode: mode(fronts),
-    consec, consecPct: (consec/n*100).toFixed(1)
-  };
-}
-
-/* ============ 描画 ============ */
-function render() {
-  const latest = DRAWS[DRAWS.length-1];
-  document.getElementById('dataRange').textContent =
-    `第${DRAWS[0].kai}回〜第${latest.kai}回(全${DRAWS.length}回)を収録`;
-
-  document.getElementById('latestBar').innerHTML =
-    `<div class="label">最新の抽せん結果</div>
-     <div style="font-size:12.5px;margin-top:2px">第${latest.kai}回(${latest.date})</div>
-     <div class="latest-nums">
-       ${latest.nums.map(n=>`<span class="n">${n}</span>`).join('')}
-       <span class="n bonus">${latest.bonus}</span>
-     </div>
-     <div class="latest-meta">合計 ${latest.nums.reduce((a,b)=>a+b,0)} ・
-       奇数 ${latest.nums.filter(x=>x%2===1).length}個 ・
-       前半 ${latest.nums.filter(x=>x<=21).length}個 ・
-       ${latest.nums.some((x,i)=>i>0&&x-latest.nums[i-1]===1)?'連番あり':'連番なし'}
-       (点線がボーナス数字)</div>`;
-
-  renderRanking();
-  renderDemoku();
-  renderKeta();
-  renderTrend();
-  renderMyGrid();
-  renderSaved();
-}
-
-function renderRanking() {
-  const gos = gosataInfo().slice(0,10);
-  document.getElementById('gosataList').innerHTML = gos.map((g,i)=>
-    `<div class="rank-row">
-      <span class="rank-pos">${i+1}位</span>
-      <span class="rank-num cold">${g.n}</span>
-      <span class="rank-info">${g.gap}回連続で不出現
-        <span class="rank-sub">(自己最長 ${g.maxGap}回)</span></span>
-    </div>`).join('');
-
-  const last100 = DRAWS.slice(-100);
-  const c = countIn(last100);
-  const sorted = Object.entries(c).map(([n,v])=>({n:+n,v})).sort((a,b)=>b.v-a.v||a.n-b.n);
-  const exp = (last100.length*6/43).toFixed(1);
-
-  document.getElementById('hotList').innerHTML = sorted.slice(0,10).map((x,i)=>
-    `<div class="rank-row">
-      <span class="rank-pos">${i+1}位</span>
-      <span class="rank-num">${x.n}</span>
-      <span class="rank-info">${x.v}回<span class="rank-sub">(理論値 ${exp}回)</span></span>
-    </div>`).join('');
-
-  document.getElementById('coldList').innerHTML = sorted.slice(-10).reverse().map((x,i)=>
-    `<div class="rank-row">
-      <span class="rank-pos">${i+1}位</span>
-      <span class="rank-num cold">${x.n}</span>
-      <span class="rank-info">${x.v}回<span class="rank-sub">(理論値 ${exp}回)</span></span>
-    </div>`).join('');
-}
-
-function renderDemoku() {
-  const list = DRAWS.slice(-30).reverse();
-  let html = '<tr><th>回</th>';
-  for (let n=1; n<=43; n++) html += `<th>${n}</th>`;
-  html += '</tr>';
-  list.forEach(d => {
-    html += `<tr><td class="kai">${d.kai}</td>`;
-    for (let n=1; n<=43; n++) {
-      if (d.nums.includes(n)) html += '<td><span class="dot"></span></td>';
-      else if (d.bonus === n) html += '<td><span class="dot bonus"></span></td>';
-      else html += '<td></td>';
+    const out = [];
+    for (let i = 1; i < lines.length; i++) {
+      const c = lines[i].split(',');
+      if (c.length < 9) continue;
+      const main = iMain.map(j => parseInt(c[j], 10));
+      if (main.some(isNaN)) continue;
+      // 日付 2026/9/17 → 2026-09-17
+      const dp = (c[iDate] || '').trim().split('/');
+      const date = dp.length === 3
+        ? `${dp[0]}-${pad2(+dp[1])}-${pad2(+dp[2])}` : '';
+      out.push({
+        no: parseInt(c[iNo], 10),
+        date,
+        main: main.sort((a, b) => a - b),
+        bonus: parseInt(c[iBonus], 10),
+        carryover: iCarry >= 0 ? (parseInt(c[iCarry], 10) || 0) : 0,
+        prizes: prizeCols
+          .filter(p => p.amount >= 0)
+          .map(p => ({
+            grade: p.grade,
+            amount: parseInt(c[p.amount], 10) || 0,
+            count: p.count >= 0 ? (parseInt(c[p.count], 10) || 0) : 0
+          }))
+      });
     }
-    html += '</tr>';
-  });
-  document.getElementById('demokuTable').innerHTML = html;
-}
-
-const ZONES = [[1,9,'1〜9'],[10,19,'10代'],[20,29,'20代'],[30,39,'30代'],[40,43,'40〜43']];
-
-function renderKeta() {
-  const list = DRAWS.slice(-30).reverse();
-  let html = '<tr><th>回</th>' + ZONES.map(z=>`<th>${z[2]}</th>`).join('') + '</tr>';
-  list.forEach(d => {
-    html += `<tr><td class="kai">${d.kai}</td>`;
-    ZONES.forEach(([lo,hi]) => {
-      const cnt = d.nums.filter(n => n>=lo && n<=hi).length;
-      html += `<td>${cnt ? cnt : ''}</td>`;
-    });
-    html += '</tr>';
-  });
-  document.getElementById('ketaTable').innerHTML = html;
-
-  const all = DRAWS.length * 6;
-  document.getElementById('ketaStats').innerHTML = ZONES.map(([lo,hi,label]) => {
-    let c = 0;
-    DRAWS.forEach(d => c += d.nums.filter(n=>n>=lo&&n<=hi).length);
-    return `<div class="stat-box">
-      <div class="stat-label">${label}</div>
-      <div class="stat-val">${(c/all*100).toFixed(1)}%</div>
-      <div class="stat-note">全期間 ${c}個</div>
-    </div>`;
-  }).join('');
-}
-
-function statHtml(a, label) {
-  if (!a) return '';
-  return `<div class="stat-box"><div class="stat-label">合計値の平均</div>
-      <div class="stat-val">${a.sumAvg}</div>
-      <div class="stat-note">${a.sumMin}〜${a.sumMax}(理論平均132)</div></div>
-    <div class="stat-box"><div class="stat-label">最も多い奇数の個数</div>
-      <div class="stat-val">${a.oddMode[0]}個</div>
-      <div class="stat-note">${a.n}回中${a.oddMode[1]}回</div></div>
-    <div class="stat-box"><div class="stat-label">最も多い前半の個数</div>
-      <div class="stat-val">${a.frontMode[0]}個</div>
-      <div class="stat-note">${a.n}回中${a.frontMode[1]}回</div></div>
-    <div class="stat-box"><div class="stat-label">連番の発生</div>
-      <div class="stat-val">${a.consecPct}%</div>
-      <div class="stat-note">${a.n}回中${a.consec}回</div></div>`;
-}
-function renderTrend() {
-  document.getElementById('trend10').innerHTML  = statHtml(analyze(DRAWS.slice(-10)));
-  document.getElementById('trend50').innerHTML  = statHtml(analyze(DRAWS.slice(-50)));
-  document.getElementById('trendAll').innerHTML = statHtml(analyze(DRAWS));
-}
-
-/* ============ マイ予想 ============ */
-let selected = new Set();
-
-function renderMyGrid() {
-  let html = '';
-  for (let n=1; n<=43; n++) {
-    html += `<div class="num-btn" data-n="${n}" onclick="toggleNum(${n}, this)">${n}</div>`;
+    return out;
   }
-  document.getElementById('myGrid').innerHTML = html;
-}
-function toggleNum(n, el) {
-  if (selected.has(n)) { selected.delete(n); el.classList.remove('on'); }
-  else {
-    if (selected.size >= 6) return;
-    selected.add(n); el.classList.add('on');
+
+  // 予想の対象日以降で最初の抽選(年末年始など抽選がない日にも対応)
+  function findDrawFor(targetIso) {
+    if (!drawData) return null;
+    return drawData.draws.find(d => d.date >= targetIso) || null;
   }
-  document.getElementById('mySelInfo').textContent = `${selected.size}個選択中`;
-}
-function clearSelection() {
-  selected.clear();
-  document.querySelectorAll('#myGrid .num-btn').forEach(b => b.classList.remove('on'));
-  document.getElementById('mySelInfo').textContent = '0個選択中';
-}
 
-function getSaved() {
-  try { return JSON.parse(localStorage.getItem('l6_preds') || '[]'); }
-  catch(e) { return []; }
-}
-function setSaved(v) {
-  try { localStorage.setItem('l6_preds', JSON.stringify(v)); } catch(e) {}
-}
-function savePrediction() {
-  if (selected.size !== 6) { alert('6個選んでください。'); return; }
-  const arr = getSaved();
-  const nums = Array.from(selected).sort((a,b)=>a-b);
-  if (arr.some(p => p.join(',') === nums.join(','))) { alert('同じ組み合わせが保存済みです。'); return; }
-  arr.push(nums);
-  setSaved(arr);
-  if (typeof gtag === 'function') gtag('event', 'member_save_prediction');
-  clearSelection();
-  renderSaved();
-}
-function deletePrediction(i) {
-  const arr = getSaved();
-  arr.splice(i,1);
-  setSaved(arr);
-  renderSaved();
-}
-
-function judge(nums, draw) {
-  const hit = nums.filter(n => draw.nums.includes(n)).length;
-  const bhit = nums.includes(draw.bonus);
-  if (hit === 6) return 1;
-  if (hit === 5 && bhit) return 2;
-  if (hit === 5) return 3;
-  if (hit === 4) return 4;
-  if (hit === 3) return 5;
-  return 0;
-}
-
-function renderSaved() {
-  const arr = getSaved();
-  const box = document.getElementById('savedList');
-  if (!arr.length) {
-    box.innerHTML = '<div class="hint">まだ保存された予想はありません。</div>';
-    document.getElementById('backtestArea').innerHTML =
-      '<div class="hint">予想を保存すると、ここに検証結果が表示されます。</div>';
-    return;
+  function judge(nums, draw) {
+    const main = new Set(draw.main);
+    const match = nums.filter(n => main.has(n)).length;
+    const bonusHit = nums.includes(draw.bonus);
+    let grade = 0;
+    if (match === 6) grade = 1;
+    else if (match === 5 && bonusHit) grade = 2;
+    else if (match === 5) grade = 3;
+    else if (match === 4) grade = 4;
+    else if (match === 3) grade = 5;
+    const prize = (draw.prizes || []).find(p => p.grade === grade);
+    return { match, bonusHit, grade, amount: prize ? prize.amount : null };
   }
-  const latest = DRAWS[DRAWS.length-1];
-  box.innerHTML = arr.map((nums,i) => {
-    const rank = judge(nums, latest);
-    return `<div class="saved-item">
-      <div class="saved-nums">${nums.map(n =>
-        `<span class="${latest.nums.includes(n)?'hit':(n===latest.bonus?'bhit':'')}">${n}</span>`
-      ).join('')}</div>
-      <span class="result-badge ${rank?'win':''}">${rank ? rank+'等' : 'はずれ'}</span>
-      <button class="del-btn" onclick="deletePrediction(${i})" title="削除">×</button>
-    </div>`;
-  }).join('') + `<div class="hint">第${latest.kai}回(${latest.date})との照合結果です。</div>`;
 
-  renderBacktest(arr);
-}
-
-function renderBacktest(arr) {
-  document.getElementById('backtestArea').innerHTML = arr.map((nums, i) => {
-    const cnt = [0,0,0,0,0,0];
-    DRAWS.forEach(d => { const r = judge(nums, d); if (r) cnt[r]++; });
-    const total = cnt[1]+cnt[2]+cnt[3]+cnt[4]+cnt[5];
-    return `<div class="saved-item" style="flex-direction:column;align-items:flex-start;gap:6px">
-      <div class="saved-nums">${nums.map(n=>`<span>${n}</span>`).join('')}</div>
-      <div style="font-size:12px;color:var(--text-muted)">
-        1等 ${cnt[1]} / 2等 ${cnt[2]} / 3等 ${cnt[3]} / 4等 ${cnt[4]} / 5等 ${cnt[5]}
-        <span class="rank-sub">(全${DRAWS.length}回中 ${total}回的中)</span>
+  function renderLatest() {
+    const el = document.getElementById('latestBody');
+    const next = nextDrawDate();
+    const nextChip = `<span class="meta-chip strong">次回 ${formatDateJa(next)} 抽選(購入は18:30まで)</span>`;
+    if (!drawData) {
+      el.innerHTML = `<p class="muted-msg">${drawLoadFailed
+        ? '当せん番号データを読み込めませんでした。時間をおいてページを再読み込みしてください。保存した予想は抽選結果が読み込めしだい照合されます。'
+        : '当せん番号を読み込んでいます…'}</p><div class="latest-meta">${nextChip}</div>`;
+      return;
+    }
+    const d = drawData.draws[drawData.draws.length - 1];
+    const first = (d.prizes || []).find(p => p.grade === 1);
+    const firstText = first ? (first.count ? `1等 ${first.count}口 ${yen(first.amount)}` : '1等 該当なし') : '';
+    const updated = drawData.updated ? drawData.updated.slice(0, 10) : '';
+    el.innerHTML = `
+      <div class="latest-head">
+        <div><span class="latest-draw">第${d.no}回</span><span class="latest-date">${formatDateJa(d.date, true)}</span></div>
       </div>
-    </div>`;
-  }).join('');
-}
+      <div class="latest-balls" aria-label="本数字 ${d.main.join('、')}、ボーナス数字 ${d.bonus}">
+        ${d.main.map(n => `<div class="ball">${n}</div>`).join('')}
+        <span class="bonus-label">ボーナス</span><div class="ball ball-bonus">${d.bonus}</div>
+      </div>
+      <div class="latest-meta">
+        ${firstText ? `<span class="meta-chip">${firstText}</span>` : ''}
+        ${d.carryover ? `<span class="meta-chip">キャリーオーバー ${yen(d.carryover)}</span>` : ''}
+        ${nextChip}
+      </div>
+      <p class="source-note">出典: <a href="${drawData.sourceUrl || 'https://www.mizuhobank.co.jp/takarakuji/check/loto/loto6/index.html'}" target="_blank" rel="noopener">みずほ銀行 当せん番号案内</a>${updated ? `(${updated.replace(/-/g, '/')} 更新)` : ''}。正式な当せん確認は宝くじ公式サイト等でも行ってください。</p>`;
+  }
 
-/* ============ タブ ============ */
-function switchTab(el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById(el.dataset.panel).classList.add('active');
-  if (typeof gtag === 'function') gtag('event', 'member_tab', { event_label: el.dataset.panel });
-}
+  // ---- 履歴(localStorage) ----
+  function loadHistory() {
+    try {
+      const arr = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      return Array.isArray(arr)
+        ? arr.filter(h => h && Array.isArray(h.nums) && h.nums.length === 6 && h.target)
+             .map(h => Object.assign(h, { nums: h.nums.map(Number).sort((a, b) => a - b) }))
+        : [];
+    } catch (e) { return []; }
+  }
+  function storeHistory(list) {
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX)));
+      return true;
+    } catch (e) {
+      showToast('このブラウザでは履歴を保存できませんでした(プライベートモード等)');
+      return false;
+    }
+  }
+  const comboKey = nums => nums.slice().sort((a, b) => a - b).join(',');
+  function isSaved(nums, target) {
+    const key = comboKey(nums);
+    return loadHistory().some(h => h.target === target && comboKey(h.nums) === key);
+  }
+
+  function saveResults(index) {
+    const target = nextDrawDate();
+    const picks = index === undefined ? lastResults : [lastResults[index]];
+    const list = loadHistory();
+    let added = 0;
+    picks.forEach(r => {
+      if (!r || list.some(h => h.target === target && comboKey(h.nums) === r.key)) return;
+      list.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), nums: r.nums.slice(), target, savedAt: new Date().toISOString() });
+      added++;
+    });
+    if (added === 0) { showToast('すでに保存されています'); return; }
+    if (!storeHistory(list)) return;
+    track('tool_save', index === undefined ? 'save_all' : 'save_one');
+    showToast(`${formatDateJa(target)} 抽選分として${added}口を保存しました`);
+    renderResults();
+    renderHistory();
+  }
+
+  function deleteHistory(id) {
+    storeHistory(loadHistory().filter(h => h.id !== id));
+    renderHistory();
+    if (lastResults.length) renderResults();
+  }
+  function clearHistory() {
+    if (!confirm('保存した予想履歴をすべて削除します。よろしいですか?')) return;
+    storeHistory([]);
+    renderHistory();
+    if (lastResults.length) renderResults();
+    showToast('履歴を削除しました');
+  }
+
+  // ===== メンバー限定の分析 =====
+  function renderMemberAnalysis() {
+    if (!drawData || !drawData.draws.length) return;
+    const draws = drawData.draws;
+    renderGosata(draws);
+    renderDemoku(draws);
+    renderKeta(draws);
+    renderTrend(draws);
+  }
+
+  function renderGosata(draws) {
+    const latest = draws[draws.length - 1].no;
+    const info = [];
+    for (let n = 1; n <= 43; n++) {
+      const appear = [];
+      draws.forEach(d => { if (d.main.includes(n)) appear.push(d.no); });
+      if (!appear.length) continue;
+      let maxGap = 0;
+      for (let i = 1; i < appear.length; i++) {
+        maxGap = Math.max(maxGap, appear[i] - appear[i - 1]);
+      }
+      info.push({ n, gap: latest - appear[appear.length - 1], maxGap });
+    }
+    info.sort((a, b) => b.gap - a.gap || a.n - b.n);
+    document.getElementById('gosataBody').innerHTML = info.slice(0, 10).map((g, i) =>
+      `<div class="gosata-row">
+        <span class="gosata-pos">${i + 1}位</span>
+        <span class="gosata-num">${g.n}</span>
+        <span class="gosata-info">${g.gap}回連続で不出現
+          <span class="gosata-sub">(自己最長 ${g.maxGap}回)</span></span>
+      </div>`).join('');
+  }
+
+  function renderDemoku(draws) {
+    const list = draws.slice(-30).reverse();
+    let html = '<tr><th>回</th>';
+    for (let n = 1; n <= 43; n++) html += `<th>${n}</th>`;
+    html += '</tr>';
+    list.forEach(d => {
+      html += `<tr><td class="kai">${d.no}</td>`;
+      for (let n = 1; n <= 43; n++) {
+        if (d.main.includes(n)) html += '<td><span class="dot-main"></span></td>';
+        else if (d.bonus === n) html += '<td><span class="dot-bonus"></span></td>';
+        else html += '<td></td>';
+      }
+      html += '</tr>';
+    });
+    document.getElementById('demokuTable').innerHTML = html;
+  }
+
+  const ZONES = [[1, 9, '1〜9'], [10, 19, '10代'], [20, 29, '20代'], [30, 39, '30代'], [40, 43, '40〜43']];
+
+  function renderKeta(draws) {
+    const list = draws.slice(-30).reverse();
+    let html = '<tr><th>回</th>' + ZONES.map(z => `<th>${z[2]}</th>`).join('') + '</tr>';
+    list.forEach(d => {
+      html += `<tr><td class="kai">${d.no}</td>`;
+      ZONES.forEach(([lo, hi]) => {
+        const c = d.main.filter(n => n >= lo && n <= hi).length;
+        html += `<td>${c ? c : ''}</td>`;
+      });
+      html += '</tr>';
+    });
+    document.getElementById('ketaTable').innerHTML = html;
+
+    const total = draws.length * 6;
+    document.getElementById('ketaStatsBody').innerHTML =
+      '<div class="trend-head">ゾーン別の出現割合(全期間)</div><div class="trend-grid">' +
+      ZONES.map(([lo, hi, label]) => {
+        let c = 0;
+        draws.forEach(d => { c += d.main.filter(n => n >= lo && n <= hi).length; });
+        return `<div class="trend-box">
+          <div class="trend-label">${label}</div>
+          <div class="trend-val">${(c / total * 100).toFixed(1)}%</div>
+          <div class="trend-note">${c}個</div>
+        </div>`;
+      }).join('') + '</div>';
+  }
+
+  function analyzeDraws(list) {
+    const n = list.length;
+    if (!n) return null;
+    const sums = list.map(d => d.main.reduce((a, b) => a + b, 0));
+    const odds = list.map(d => d.main.filter(x => x % 2 === 1).length);
+    const fronts = list.map(d => d.main.filter(x => x <= 21).length);
+    const consec = list.filter(d => d.main.some((x, i) => i > 0 && x - d.main[i - 1] === 1)).length;
+    const mode = arr => {
+      const c = {};
+      arr.forEach(v => { c[v] = (c[v] || 0) + 1; });
+      return Object.entries(c).sort((a, b) => b[1] - a[1])[0];
+    };
+    return {
+      n,
+      sumAvg: Math.round(sums.reduce((a, b) => a + b, 0) / n),
+      sumMin: Math.min(...sums), sumMax: Math.max(...sums),
+      oddMode: mode(odds), frontMode: mode(fronts),
+      consec, consecPct: (consec / n * 100).toFixed(1)
+    };
+  }
+
+  function trendGrid(a) {
+    if (!a) return '';
+    return `<div class="trend-grid">
+      <div class="trend-box"><div class="trend-label">合計値の平均</div>
+        <div class="trend-val">${a.sumAvg}</div>
+        <div class="trend-note">${a.sumMin}〜${a.sumMax}(理論平均132)</div></div>
+      <div class="trend-box"><div class="trend-label">最も多い奇数の個数</div>
+        <div class="trend-val">${a.oddMode[0]}個</div>
+        <div class="trend-note">${a.n}回中${a.oddMode[1]}回</div></div>
+      <div class="trend-box"><div class="trend-label">最も多い前半の個数</div>
+        <div class="trend-val">${a.frontMode[0]}個</div>
+        <div class="trend-note">${a.n}回中${a.frontMode[1]}回</div></div>
+      <div class="trend-box"><div class="trend-label">連番の発生</div>
+        <div class="trend-val">${a.consecPct}%</div>
+        <div class="trend-note">${a.n}回中${a.consec}回</div></div>
+    </div>`;
+  }
+
+  function renderTrend(draws) {
+    document.getElementById('trendBody').innerHTML =
+      '<div class="trend-head">直近10回</div>' + trendGrid(analyzeDraws(draws.slice(-10))) +
+      '<div class="trend-head">直近50回</div>' + trendGrid(analyzeDraws(draws.slice(-50))) +
+      `<div class="trend-head">全期間(第1回〜第${draws[draws.length-1].no}回)</div>` + trendGrid(analyzeDraws(draws));
+  }
+
+  function renderHistory() {
+    const body = document.getElementById('historyBody');
+    const actions = document.getElementById('historyActions');
+    const list = loadHistory();
+    if (list.length === 0) {
+      actions.innerHTML = '';
+      body.innerHTML = '<p class="muted-msg">保存した予想はまだありません。生成した番号の「保存」を押すと、ここに記録され、抽選後に当せん番号と自動で照合されます。</p>';
+      return;
+    }
+    actions.innerHTML = `
+      <button type="button" class="mini-btn" onclick="copyHistory()">履歴をコピー</button>
+      <button type="button" class="mini-btn danger" onclick="clearHistory()">すべて削除</button>`;
+
+    // 対象日ごとにまとめる(新しい順)
+    const groups = {};
+    list.forEach(h => { (groups[h.target] = groups[h.target] || []).push(h); });
+    const targets = Object.keys(groups).sort().reverse();
+
+    let checked = 0, wins = 0, winAmount = 0, pending = 0;
+    const html = targets.map(target => {
+      const draw = findDrawFor(target);
+      const items = groups[target];
+      let groupWins = 0;
+      const rows = items.map(h => {
+        let numsHtml, resultHtml;
+        if (draw) {
+          const r = judge(h.nums, draw);
+          checked++;
+          if (r.grade) { wins++; groupWins++; winAmount += r.amount || 0; }
+          const main = new Set(draw.main);
+          numsHtml = h.nums.map(n => {
+            const cls = main.has(n) ? 'hit' : (n === draw.bonus ? 'bonus-hit' : '');
+            return `<div class="sball ${cls}">${n}</div>`;
+          }).join('');
+          resultHtml = r.grade
+            ? `<span class="grade">${r.grade}等</span>${r.amount ? `<span class="amount">${yen(r.amount)}</span>` : ''}`
+            : `はずれ<br> ${r.match}個一致${r.bonusHit ? '+B' : ''}`;
+        } else {
+          pending++;
+          numsHtml = h.nums.map(n => `<div class="sball">${n}</div>`).join('');
+          resultHtml = '結果待ち';
+        }
+        return `<div class="h-row">
+          <div class="h-nums">${numsHtml}</div>
+          <div class="h-result">${resultHtml}</div>
+          <button type="button" class="icon-btn" onclick="deleteHistory('${h.id}')" aria-label="この予想を削除">×</button>
+        </div>`;
+      }).join('');
+
+      const title = draw
+        ? `第${draw.no}回 ${formatDateJa(draw.date)} 抽選分`
+        : `${formatDateJa(target)} 抽選分`;
+      const status = draw
+        ? (groupWins ? `<span class="h-group-status win">${items.length}口中 ${groupWins}口当せん</span>` : `<span class="h-group-status">${items.length}口 当せんなし</span>`)
+        : `<span class="h-group-status">${items.length}口 ${drawLoadFailed ? '照合データなし' : '抽選後に自動で照合します'}</span>`;
+      const drawRow = draw
+        ? `<div class="h-group-draw">当せん番号 ${draw.main.map(n => `<div class="sball draw">${n}</div>`).join('')}<div class="sball draw-bonus">${draw.bonus}</div></div>`
+        : '';
+      return `<div class="h-group"><div class="h-group-head"><span class="h-group-title">${title}</span>${status}</div>${drawRow}${rows}</div>`;
+    }).join('');
+
+    const summary = `<div class="history-summary">
+      <span class="meta-chip">保存 ${list.length}口</span>
+      <span class="meta-chip">照合済み ${checked}口</span>
+      ${pending ? `<span class="meta-chip">結果待ち ${pending}口</span>` : ''}
+      <span class="meta-chip ${wins ? 'strong' : ''}">当せん ${wins}口${winAmount ? ` 合計${yen(winAmount)}` : ''}</span>
+    </div>`;
+    const legend = checked ? `<div class="legend">
+      <span><span class="sball hit"></span>本数字と一致</span>
+      <span><span class="sball bonus-hit"></span>ボーナス数字と一致</span>
+    </div>` : '';
+    body.innerHTML = summary + html + legend;
+  }
+
+  // ---- コピー ----
+  const numsText = nums => nums.map(pad2).join(' ');
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+      ta.remove();
+      return ok;
+    }
+  }
+  async function copyResult(i) {
+    const ok = await copyText(numsText(lastResults[i].nums));
+    showToast(ok ? `セット${i + 1}をコピーしました` : 'コピーできませんでした');
+    if (ok) track('tool_copy', 'copy_one');
+  }
+  async function copyAllResults() {
+    const text = `ロト6 予想 ${formatDateJa(nextDrawDate())} 抽選分\n` +
+      lastResults.map((r, i) => `セット${i + 1}: ${numsText(r.nums)}`).join('\n');
+    const ok = await copyText(text);
+    showToast(ok ? `${lastResults.length}セットをコピーしました` : 'コピーできませんでした');
+    if (ok) track('tool_copy', 'copy_all');
+  }
+  async function copyHistory() {
+    const list = loadHistory();
+    const groups = {};
+    list.forEach(h => { (groups[h.target] = groups[h.target] || []).push(h); });
+    const text = Object.keys(groups).sort().reverse().map(t => {
+      const draw = findDrawFor(t);
+      const head = draw ? `第${draw.no}回 ${formatDateJa(draw.date)}` : `${formatDateJa(t)}(結果待ち)`;
+      const lines = groups[t].map(h => {
+        if (!draw) return numsText(h.nums);
+        const r = judge(h.nums, draw);
+        return `${numsText(h.nums)}  ${r.grade ? r.grade + '等' : 'はずれ'}(${r.match}個一致)`;
+      });
+      return [head, ...lines].join('\n');
+    }).join('\n\n');
+    const ok = await copyText(text);
+    showToast(ok ? '履歴をコピーしました' : 'コピーできませんでした');
+  }
+
+  let toastTimer = null;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  // 他のタブで履歴が変わったときも反映
+  window.addEventListener('storage', e => { if (e.key === HISTORY_KEY) { renderHistory(); if (lastResults.length) renderResults(); } });
+
+  /* ===== 合言葉認証 =====
+     PASSWORD はメンバー限定記事に記載した合言葉と一致させる。
+     毎月変更する運用を想定。 */
+  const PASSWORD = '【ここに合言葉を設定】';
+
+  function initApp() {
+    document.getElementById('memberGate').style.display = 'none';
+    document.getElementById('memberContent').style.display = 'block';
+
+    renderHistory();
+    loadDrawData();
+
+    initGrid('fixedGrid', fixedState, 'fixedChips', 'selected-fixed');
+    initGrid('bannedGrid', bannedState, 'bannedChips', 'selected-banned');
+
+    document.getElementById('ctrlConsec').classList.add('off');
+    document.getElementById('labelConsec').classList.add('off');
+
+    if (typeof gtag === 'function') gtag('event', 'member_tool_open');
+  }
+
+  function checkMemberPw() {
+    const v = document.getElementById('memberPw').value.trim();
+    if (v === PASSWORD) {
+      try { sessionStorage.setItem('l6member', '1'); } catch (e) {}
+      initApp();
+    } else {
+      document.getElementById('memberPwErr').textContent = '合言葉が違います。';
+    }
+  }
+
+  document.getElementById('memberPw').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkMemberPw();
+  });
+
+  // 同じタブ内では再入力を省略
+  try {
+    if (sessionStorage.getItem('l6member') === '1') initApp();
+  } catch (e) {}
 </script>
 </body>
 </html>
