@@ -226,6 +226,23 @@
   }
   .divider { height: 1px; background: var(--border); margin: 1rem 0; }
   .err { font-size: 13px; color: var(--red); padding: 10px 0; font-weight: 500; }
+
+  /* ===== 最新の当せん番号 ===== */
+  .muted-msg { font-size: 13px; color: var(--text-muted); }
+  .latest-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+  .latest-draw { font-size: 15px; font-weight: 700; }
+  .latest-date { font-size: 12.5px; color: var(--text-muted); margin-left: 6px; font-weight: 500; }
+  .latest-balls { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+  .ball {
+    width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; background: var(--text); color: #fff;
+  }
+  .ball-bonus { background: var(--surface); color: var(--red); border: 2px solid var(--red); }
+  .bonus-label { font-size: 11px; color: var(--text-muted); margin-left: 4px; }
+  .latest-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+  .meta-chip.strong { color: var(--blue); background: var(--blue-light); border-color: var(--blue-mid); font-weight: 600; }
+  .source-note { font-size: 11px; color: var(--text-faint); margin-top: 10px; }
+  .source-note a { color: var(--text-muted); }
 </style>
 </head>
 <body>
@@ -290,6 +307,12 @@
 </style>
 
 <div class="container">
+
+  <!-- 最新の当せん番号 -->
+  <div class="card" id="latestCard">
+    <div class="card-title">最新の当せん番号</div>
+    <div id="latestBody"><p class="muted-msg">当せん番号を読み込んでいます…</p></div>
+  </div>
 
   <!-- Fixed numbers -->
   <div class="card">
@@ -491,6 +514,132 @@
 
 <script>
   const fixedState = new Set();
+
+  /* ===== 最新の当せん番号 ===== */
+  const RESULTS_URL = 'loto6.csv';
+  const SALES_CUTOFF_MIN = 18 * 60 + 30; // 抽選日の購入締切 18:30
+  const WEEK = ['日', '月', '火', '水', '木', '金', '土'];
+  const DAY_MS = 86400000;
+
+  let drawData = null;      // { updated, draws: [...] }
+  let drawLoadFailed = false;
+
+  function jstNow() {
+    // 端末のローカル時刻をそのまま使う(サーバー時刻とのズレは許容)
+    return new Date();
+  }
+
+  function isDrawDay(d) {
+    const w = d.getDay();
+    return w === 1 || w === 4; // 月・木
+  }
+
+  function nextDrawDate() {
+    const now = jstNow();
+    let d = new Date(now);
+    const n = { min: d.getHours() * 60 + d.getMinutes() };
+    if (!(isDrawDay(d) && n.min < SALES_CUTOFF_MIN)) {
+      d = new Date(d.getTime() + DAY_MS);
+    }
+    while (!isDrawDay(d)) {
+      d = new Date(d.getTime() + DAY_MS);
+    }
+    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function formatDateJa(iso, withYear) {
+    const [y, m, d] = iso.split('-').map(Number);
+    const w = WEEK[new Date(y, m - 1, d).getDay()];
+    return withYear === false ? `${m}/${d}(${w})` : `${y}/${m}/${d}(${w})`;
+  }
+
+  function yen(n) {
+    return '¥' + Number(n || 0).toLocaleString('ja-JP');
+  }
+
+  // ---- 当せん番号データ(CSVから読み込み) ----
+  async function loadDrawData() {
+    try {
+      const res = await fetch(RESULTS_URL, { cache: 'no-cache' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const buf = await res.arrayBuffer();
+      let text;
+      try {
+        text = new TextDecoder('shift_jis').decode(buf);
+        if (!text.includes('開催回')) throw new Error('retry-utf8');
+      } catch (e) {
+        text = new TextDecoder('utf-8').decode(buf);
+      }
+      const draws = parseCsvToDraws(text);
+      if (!draws.length) throw new Error('empty');
+      draws.sort((a, b) => a.no - b.no);
+      drawData = { draws, updated: draws[draws.length - 1].date };
+    } catch (e) {
+      drawLoadFailed = true;
+      console.warn('当せん番号データを読み込めませんでした:', e);
+    }
+    renderLatest();
+  }
+
+  // CSV(開催回,日付,第1〜6数字,BONUS数字,…賞金,キャリーオーバー)を draws 形式へ変換
+  function parseCsvToDraws(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    if (!lines.length) return [];
+    const header = lines[0].split(',').map(h => h.trim());
+    const col = name => header.indexOf(name);
+    const iNo = col('開催回'), iDate = col('日付'), iBonus = col('BONUS数字');
+    const iMain = ['第1数字','第2数字','第3数字','第4数字','第5数字','第6数字'].map(col);
+    const iCarry = col('キャリーオーバー');
+
+    const out = [];
+    for (let i = 1; i < lines.length; i++) {
+      const c = lines[i].split(',');
+      if (c.length < 9) continue;
+      const main = iMain.map(j => parseInt(c[j], 10));
+      if (main.some(isNaN)) continue;
+      const dp = (c[iDate] || '').trim().split('/');
+      const date = dp.length === 3
+        ? `${dp[0]}-${String(+dp[1]).padStart(2,'0')}-${String(+dp[2]).padStart(2,'0')}` : '';
+      out.push({
+        no: parseInt(c[iNo], 10),
+        date,
+        main: main.sort((a, b) => a - b),
+        bonus: parseInt(c[iBonus], 10),
+        carryover: iCarry >= 0 ? (parseInt(c[iCarry], 10) || 0) : 0
+      });
+    }
+    return out;
+  }
+
+  function renderLatest() {
+    const el = document.getElementById('latestBody');
+    const next = nextDrawDate();
+    const nextChip = `<span class="meta-chip strong">次回 ${formatDateJa(next)} 抽選(購入は18:30まで)</span>`;
+    if (!drawData) {
+      el.innerHTML = `<p class="muted-msg">${drawLoadFailed
+        ? '当せん番号を読み込めませんでした。時間をおいて再度お試しください。'
+        : '当せん番号を読み込んでいます…'}</p>`;
+      return;
+    }
+    const d = drawData.draws[drawData.draws.length - 1];
+    const updated = drawData.updated ? drawData.updated.slice(0, 10) : '';
+    el.innerHTML = `
+      <div class="latest-head">
+        <span class="latest-draw">第${d.no}回<span class="latest-date">${formatDateJa(d.date)}</span></span>
+      </div>
+      <div class="latest-balls">
+        ${d.main.map(n => `<span class="ball">${n}</span>`).join('')}
+        <span class="ball ball-bonus">${d.bonus}</span><span class="bonus-label">BONUS</span>
+      </div>
+      <div class="latest-meta">
+        ${d.carryover ? `<span class="meta-chip">キャリーオーバー ${yen(d.carryover)}</span>` : ''}
+        ${nextChip}
+      </div>
+      <p class="source-note">出典: <a href="https://www.mizuhobank.co.jp/takarakuji/check/loto/loto6/index.html" target="_blank" rel="noopener">みずほ銀行 当せん番号案内</a>${updated ? `(${updated.replace(/-/g, '/')} 更新)` : ''}。正式な当せん確認は宝くじ公式サイト等でも行ってください。</p>`;
+  }
+
+  loadDrawData();
 
   // 過去の傾向ピル:クリックでスライダー/入力値を即セット
   // track=true のときだけGA4に送信(おまかせ設定からの内部呼び出しと区別するため)
