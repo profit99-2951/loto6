@@ -1,0 +1,44 @@
+# ===== ロト6 WEBツールの広告リスト =====
+# このファイルを loto6Lite.html と同じ場所(GitHub)にアップロードしてください。
+# 予想を生成するたびに、下の広告からランダムで1つが表示されます。
+#
+# 書き方:
+#  ・A8.net等でコピーした広告コードをそのまま貼る
+#  ・広告と広告の間は「=====」だけの行で区切る
+#  ・「#」で始まる行はメモ扱い(表示されない)。案件名などを書いておくと便利
+#  ・広告を止めたいときは、広告コードを消して空にすればOK(広告枠ごと非表示になります)
+#
+# 例:
+# 案件名:〇〇(300×250)
+# <a href="https://px.a8.net/...."><img src="https://www....." width="300" height="250"></a>
+# =====
+# 案件名:△△(300×250)
+# <a href="https://px.a8.net/...."><img src="https://www....." width="300" height="250"></a>
+#
+# ↓ここから下に広告コードを貼ってください
+# TVCM放映で知名度UP★ココナラ｜Webサイト・デザイン・動画・イラストなど発注者 募集
+<a href="https://px.a8.net/svt/ejp?a8mat=4BEE0Z+32QNAQ+2PEO+1HYQ9T" rel="nofollow">
+<img border="0" width="300" height="250" alt="" src="https://www23.a8.net/svt/bgt?aid=261011843186&wid=001&eno=01&mid=s00000012624009064000&mc=1"></a>
+<img border="0" width="1" height="1" src="https://www15.a8.net/0.gif?a8mat=4BEE0Z+32QNAQ+2PEO+1HYQ9T" alt="">
+=====
+# フレッツ光より安いソフトバンク光！【高額キャッシュバック】【SoftBank 光】
+<a href="https://px.a8.net/svt/ejp?a8mat=4BEE0Z+1UOKJ6+3IB8+601S1" rel="nofollow">
+<img border="0" width="300" height="250" alt="" src="https://www26.a8.net/svt/bgt?aid=261011843112&wid=001&eno=01&mid=s00000016370001008000&mc=1"></a>
+<img border="0" width="1" height="1" src="https://www19.a8.net/0.gif?a8mat=4BEE0Z+1UOKJ6+3IB8+601S1" alt="">
+=====
+# 【auひかり】初期工事費無料！豪華キャンペーン！知らない人はモッタイナイ！
+<a href="https://px.a8.net/svt/ejp?a8mat=4BEE0Z+1U34XE+42Y0+614CX" rel="nofollow">
+<img border="0" width="300" height="250" alt="" src="https://www28.a8.net/svt/bgt?aid=261011843111&wid=001&eno=01&mid=s00000019044001013000&mc=1"></a>
+<img border="0" width="1" height="1" src="https://www19.a8.net/0.gif?a8mat=4BEE0Z+1U34XE+42Y0+614CX" alt="">
+=====
+# 【キャッシュバック最大7万円】ひかり電話、ヒカリ回線のお申込み窓口
+<a href="https://px.a8.net/svt/ejp?a8mat=4BEE0Z+2YKM2A+1MWA+1TS6MP" rel="nofollow">
+<img border="0" width="300" height="250" alt="" src="https://www20.a8.net/svt/bgt?aid=261011843179&wid=001&eno=01&mid=s00000007633011049000&mc=1"></a>
+<img border="0" width="1" height="1" src="https://www19.a8.net/0.gif?a8mat=4BEE0Z+2YKM2A+1MWA+1TS6MP" alt="">
+=====
+# 【NEW】楽天アフィリエイト
+<a href="https://rpx.a8.net/svt/ejp?a8mat=4BED8X+C6720I+2HOM+656YP&rakuten=y&a8ejpredirect=http%3A%2F%2Fhb.afl.rakuten.co.jp%2Fhgc%2F0ea62065.34400275.0ea62066.204f04c0%2Fa26101068867_4BED8X_C6720I_2HOM_656YP%3Fpc%3Dhttp%253A%252F%252Fwww.rakuten.co.jp%252F%26m%3Dhttp%253A%252F%252Fm.rakuten.co.jp%252F" rel="nofollow">
+<img src="http://hbb.afl.rakuten.co.jp/hsb/0ec09ba3.bc2429d5.0eb4bbaa.95151395/" border="0"></a>
+<img border="0" width="1" height="1" src="https://www17.a8.net/0.gif?a8mat=4BED8X+C6720I+2HOM+656YP" alt="">
+
+

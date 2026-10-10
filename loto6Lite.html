@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ロト6 予想ツール</title>
+<title>ロト6 予想ツール(無料)</title>
 
 <!-- Google tag (gtag.js) : ロト6データラボ アクセス解析 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-91G6P796K2"></script>
@@ -227,8 +227,31 @@
   .divider { height: 1px; background: var(--border); margin: 1rem 0; }
   .err { font-size: 13px; color: var(--red); padding: 10px 0; font-weight: 500; }
 
+  /* ===== 追加機能: 共通ボタン ===== */
+  .mini-btn {
+    font-size: 12px; font-weight: 600; padding: 5px 11px;
+    border-radius: var(--radius-sm); border: 1px solid var(--border);
+    background: var(--surface); color: var(--text); cursor: pointer;
+    white-space: nowrap; transition: background 0.1s, border-color 0.1s, color 0.1s;
+    font-family: inherit;
+  }
+  .mini-btn:hover { background: var(--surface2); }
+  .mini-btn.primary { background: var(--blue-light); border-color: var(--blue-mid); color: var(--blue); }
+  .mini-btn.primary:hover { background: var(--blue-mid); }
+  .mini-btn.done { background: var(--surface2); color: var(--text-muted); border-color: var(--border); cursor: default; }
+  .mini-btn.danger { color: var(--red); }
+  .mini-btn.danger:hover { background: var(--red-light); border-color: #F0C8C8; }
+  .mini-btn:focus-visible, .icon-btn:focus-visible, .gen-btn:focus-visible, .num-btn:focus-visible {
+    outline: 2px solid var(--blue); outline-offset: 2px;
+  }
+  .icon-btn {
+    width: 28px; height: 28px; border-radius: 50%; border: none; background: none;
+    color: var(--text-faint); font-size: 16px; line-height: 1; cursor: pointer; flex-shrink: 0;
+    font-family: inherit;
+  }
+  .icon-btn:hover { background: var(--red-light); color: var(--red); }
+
   /* ===== 最新の当せん番号 ===== */
-  .muted-msg { font-size: 13px; color: var(--text-muted); }
   .latest-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
   .latest-draw { font-size: 15px; font-weight: 700; }
   .latest-date { font-size: 12.5px; color: var(--text-muted); margin-left: 6px; font-weight: 500; }
@@ -243,19 +266,240 @@
   .meta-chip.strong { color: var(--blue); background: var(--blue-light); border-color: var(--blue-mid); font-weight: 600; }
   .source-note { font-size: 11px; color: var(--text-faint); margin-top: 10px; }
   .source-note a { color: var(--text-muted); }
+
+  /* ---- */
+  .member-tag {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    padding: 2px 8px; border-radius: 10px; margin-left: 6px;
+    background: var(--blue-light); color: var(--blue); vertical-align: middle;
+  }
+  .backtest-row {
+    display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+    margin-top: 8px; padding: 7px 10px;
+    background: var(--surface2); border-radius: var(--radius-sm);
+  }
+  .backtest-label { font-size: 10.5px; color: var(--text-faint); }
+  .backtest-val { font-size: 12.5px; font-weight: 600; color: var(--text); }
+  .backtest-note { font-size: 10.5px; color: var(--text-faint); }
+  .past-record { font-size: 10.5px; color: var(--text-faint); font-weight: 400; }
+
+  /* ---- */
+  .gosata-row.hot { background: var(--blue-light); }
+  .gosata-num.hot { background: var(--blue); }
+  .gosata-main { display: block; font-size: 12.5px; }
+  .gosata-bar {
+    display: block; height: 4px; background: var(--border);
+    border-radius: 2px; margin: 5px 0 4px; overflow: hidden;
+  }
+  .gosata-bar-fill { display: block; height: 100%; background: var(--blue); border-radius: 2px; }
+  .watch { font-size: 10.5px; color: var(--text-faint); }
+  .watch.hot { color: var(--blue); font-weight: 700; }
+
+  /* ---- */
+  .aisho-lead { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+  .aisho-head {
+    font-size: 12.5px; color: var(--text); margin: 14px 0 10px;
+    padding: 9px 11px; background: var(--surface2); border-radius: var(--radius-sm);
+  }
+  .aisho-sec-title {
+    font-size: 11.5px; font-weight: 700; color: var(--text-muted);
+    margin: 14px 0 7px; padding-bottom: 4px; border-bottom: 1px solid var(--border);
+  }
+  .aisho-row { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+  .aisho-pos { font-size: 10.5px; color: var(--text-faint); min-width: 26px; }
+  .aisho-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 26px; height: 26px; border-radius: 50%;
+    background: var(--blue); color: #fff; font-weight: 700; font-size: 12px; flex-shrink: 0;
+  }
+  .aisho-bar { flex: 1; height: 6px; background: var(--surface2); border-radius: 3px; overflow: hidden; }
+  .aisho-bar-fill { display: block; height: 100%; background: var(--blue-mid); border-radius: 3px; }
+  .aisho-cnt { font-size: 11.5px; color: var(--text-muted); min-width: 38px; text-align: right; }
+  .btn-aisho-row { margin: 10px 0 4px; }
+  .btn-note { display: block; font-size: 10.5px; color: var(--text-faint); margin-top: 4px; }
+  .scroll-x { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .demoku-table { border-collapse: collapse; font-size: 11px; width: 100%; }
+  .demoku-table th, .demoku-table td {
+    padding: 3px 2px; text-align: center;
+    border: 1px solid var(--border); white-space: nowrap;
+  }
+  .demoku-table th {
+    background: var(--surface2); font-weight: 600;
+    font-size: 10px; color: var(--text-muted);
+  }
+  .demoku-table td.kai { color: var(--text-muted); font-size: 10px; }
+  .dot-main, .dot-bonus {
+    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  }
+  .dot-main { background: var(--blue); }
+  .dot-bonus { background: #B8860B; }
+  .demoku-table td.cell-consec { background: #FFF3B0; }
+  .demoku-table td.cell-pull { background: #E8E6E1; }
+  .demoku-table td.cell-both {
+    background: linear-gradient(135deg, #FFF3B0 0 50%, #E8E6E1 50% 100%);
+  }
+  .demoku-legend {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    font-size: 10.5px; color: var(--text-muted); margin-top: 8px;
+  }
+  .demoku-legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .legend-box {
+    display: inline-block; width: 12px; height: 12px;
+    border: 1px solid var(--border); border-radius: 2px;
+  }
+  .legend-box.consec { background: #FFF3B0; }
+  .legend-box.pull { background: #E8E6E1; }
+  .legend-box.both { background: linear-gradient(135deg, #FFF3B0 0 50%, #E8E6E1 50% 100%); }
+
+  .gosata-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 7px 10px; background: var(--surface2);
+    border-radius: var(--radius-sm); margin-bottom: 6px; font-size: 13px;
+  }
+  .gosata-pos { font-size: 11px; color: var(--text-faint); min-width: 26px; }
+  .gosata-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 28px; height: 28px; border-radius: 50%;
+    background: var(--text-muted); color: #fff; font-weight: 700; font-size: 13px;
+  }
+  .gosata-info { flex: 1; font-size: 12.5px; }
+  .gosata-sub { font-size: 11px; color: var(--text-faint); }
+
+  .trend-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px;
+  }
+  .trend-box { background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; }
+  .trend-label { font-size: 11px; color: var(--text-muted); }
+  .trend-val { font-size: 16px; font-weight: 700; margin-top: 2px; }
+  .trend-note { font-size: 10.5px; color: var(--text-faint); }
+  .trend-head {
+    font-size: 12px; font-weight: 700; color: var(--text-muted);
+    margin: 14px 0 8px; padding-bottom: 4px; border-bottom: 1px solid var(--border);
+  }
+  .trend-head:first-child { margin-top: 0; }
+  .muted-msg { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+
+  /* ===== 予想結果のアクション ===== */
+  .result-head-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .result-head-row .result-header { margin-bottom: 0; }
+  .result-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+  .save-target { font-size: 12px; color: var(--text-muted); margin: -4px 0 14px; }
+  .set-label-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+  .set-label-row .set-label { margin-bottom: 0; }
+  .set-actions { display: flex; gap: 6px; }
+
+  /* ===== 予想履歴 ===== */
+  .history-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .history-head .card-title { margin-bottom: 0; }
+  .history-summary { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .h-group { border-top: 1px solid var(--border); padding-top: 12px; margin-top: 12px; }
+  .h-group:first-child { border-top: none; padding-top: 0; margin-top: 0; }
+  .h-group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+  .h-group-title { font-size: 13px; font-weight: 700; }
+  .h-group-status { font-size: 12px; color: var(--text-muted); }
+  .h-group-status.win { color: var(--blue); font-weight: 600; }
+  .h-group-draw { display: flex; align-items: center; gap: 4px; flex-wrap: wrap; margin-bottom: 8px; font-size: 11px; color: var(--text-muted); }
+  .h-group-draw .sball { width: 24px; height: 24px; font-size: 11px; }
+  .h-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+  .h-nums { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; }
+  .sball {
+    width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 12.5px; font-weight: 600; background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+  }
+  .sball.draw { background: var(--text); border-color: var(--text); color: #fff; }
+  .sball.draw-bonus { background: var(--surface); border: 2px solid var(--red); color: var(--red); }
+  .sball.hit { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .sball.bonus-hit { background: var(--surface); border: 2px solid var(--red); color: var(--red); }
+  .h-result { font-size: 12px; min-width: 88px; text-align: right; color: var(--text-muted); line-height: 1.35; }
+  .h-result .grade { display: inline-block; font-weight: 700; color: #fff; background: var(--blue); border-radius: 20px; padding: 2px 9px; }
+  .h-result .amount { display: block; font-size: 11px; color: var(--blue); font-weight: 600; margin-top: 2px; }
+  .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: var(--text-muted); margin-top: 14px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend .sball { width: 16px; height: 16px; font-size: 0; }
+  @media (max-width: 480px) {
+    .h-row { flex-wrap: wrap; row-gap: 4px; }
+    .h-nums { flex: 1 1 100%; flex-wrap: nowrap; }
+    .h-result { text-align: left; min-width: 0; flex: 1; }
+    .h-result br { display: none; }
+    .h-result .amount { display: inline; margin: 0 0 0 6px; }
+  }
+
+  /* トースト */
+  .toast {
+    position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 16px);
+    background: var(--text); color: #fff; font-size: 13px; font-weight: 500;
+    padding: 10px 18px; border-radius: 20px; opacity: 0; pointer-events: none;
+    transition: opacity 0.2s, transform 0.2s; z-index: 100; max-width: calc(100% - 32px); text-align: center;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+  @media (prefers-reduced-motion: reduce) {
+    .toast, .num-btn, .gen-btn, .mini-btn { transition: none; }
+  }
+</style>
+<style>
+  .site-footer {
+    margin-top: 32px;
+    padding: 28px 16px 36px;
+    border-top: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .footer-inner {
+    max-width: 480px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .footer-lead {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .footer-sub {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .footer-link {
+    display: inline-block;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--blue);
+    text-decoration: none;
+    padding: 9px 20px;
+    border: 1px solid var(--blue-mid);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    transition: background 0.15s ease;
+  }
+  .footer-link:hover {
+    background: var(--blue-light);
+  }
+  /* ---- ad ---- */
+  .ad-slot { position: relative; padding-top: 26px; }
+  .ad-label {
+    position: absolute; top: 8px; left: 12px;
+    font-size: 10px; font-weight: 700; letter-spacing: .05em;
+    color: var(--text-faint); border: 1px solid var(--border);
+    border-radius: 4px; padding: 0 6px;
+  }
+  #adBody { text-align: center; font-size: 13px; line-height: 1.7; }
+  #adBody img { max-width: 100%; height: auto; }
 </style>
 </head>
 <body>
 
+<div id="appContent">
+
 <div class="trust-bar">
   <span class="trust-dot"></span>
-  <span class="trust-text"><strong>ロト6データラボ</strong>が無料公開しているツールです。会員登録不要・データの外部送信もありません</span>
+  <span class="trust-text"><strong>ロト6データラボ</strong>の無料ツールです。登録不要、選んだ数字はお使いの端末内だけに保存されます</span>
 </div>
 
 <header>
   <h1>ロト6 予想ツール</h1>
   <p>条件を設定して、予想番号を生成します</p>
-  <a class="guide-link" href="https://note.com/profit_0707/n/n4eb58438a1c2" target="_blank" rel="noopener">初めての方はこちら:使い方ガイド →</a>
+  <a class="guide-link" href="https://note.com/profit_0707/n/n6b3724e94789" target="_blank" rel="noopener">初めての方はこちら:使い方ガイド →</a>
 </header>
 
 <div class="step-guide">
@@ -456,8 +700,64 @@
 
   <!-- Results -->
   <div class="card" id="resultArea">
-    <div class="result-header">予想結果</div>
+    <div class="result-head-row">
+      <div class="result-header">予想結果</div>
+      <div class="result-actions" id="resultActions"></div>
+    </div>
     <div id="resultBody"></div>
+  </div>
+
+  <!-- 広告枠(AD_HTML が空のあいだは表示しない) -->
+  <div class="card ad-slot" id="adSlot" hidden>
+    <div class="ad-label">PR</div>
+    <div id="adBody"></div>
+  </div>
+
+  <!-- 予想履歴 -->
+  <div class="card" id="historyCard">
+    <div class="history-head">
+      <div class="card-title">予想履歴</div>
+      <div class="result-actions" id="historyActions"></div>
+    </div>
+    <div id="historyBody"></div>
+  </div>
+
+  <!-- ===== ここから分析 ===== -->
+  <div class="card">
+    <div class="card-title">ご無沙汰数字 TOP10</div>
+    <div id="gosataBody"><p class="muted-msg">集計中…</p></div>
+    <p class="source-note">最後に出てから何回経過したかの順位です。カッコ内はその数字の自己最長記録。抽せんは毎回独立しているため、これらの数字が次回出やすい/出にくいということはありません。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">出目表(直近30回)</div>
+    <div class="scroll-x"><table class="demoku-table" id="demokuTable"></table></div>
+    <div class="demoku-legend">
+      <span><span class="dot-main"></span> 本数字</span>
+      <span><span class="dot-bonus"></span> ボーナス数字</span>
+      <span><span class="legend-box consec"></span> 連番</span>
+      <span><span class="legend-box pull"></span> 引っ張り(前後の回と重なる数字)</span>
+      <span><span class="legend-box both"></span> 連番かつ引っ張り</span>
+    </div>
+    <p class="source-note">横にスクロールできます。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">桁別出目表(直近30回)</div>
+    <div class="scroll-x"><table class="demoku-table" id="ketaTable"></table></div>
+    <div id="ketaStatsBody" style="margin-top:12px"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">相性分析</div>
+    <p class="aisho-lead">軸にする数字を1つ選ぶと、一緒に当せんした回数が多い数字を表示します。</p>
+    <div class="num-grid" id="aishoGrid"></div>
+    <div id="aishoResult"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">直近の傾向</div>
+    <div id="trendBody"><p class="muted-msg">集計中…</p></div>
   </div>
 
 </div>
@@ -465,181 +765,20 @@
 <!-- Footer: note導線 -->
 <footer class="site-footer">
   <div class="footer-inner">
-    <p class="footer-lead">このツールは「ロト6データラボ」が無料公開しています</p>
-    <p class="footer-sub">毎月最新データに更新されるExcel本格版もあります。メンバーシップは今なら初月無料</p>
+    <p class="footer-lead">ロト6データラボ 無料ツール</p>
+    <p class="footer-sub">分析の解説記事はnoteで公開しています</p>
     <a class="footer-link" href="https://note.com/profit_0707/n/n2ce9f6a44290" target="_blank" rel="noopener">note で分析記事を読む →</a>
   </div>
 </footer>
 
-<style>
-  .site-footer {
-    margin-top: 32px;
-    padding: 28px 16px 36px;
-    border-top: 1px solid var(--border);
-    background: var(--surface2);
-  }
-  .footer-inner {
-    max-width: 480px;
-    margin: 0 auto;
-    text-align: center;
-  }
-  .footer-lead {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .footer-sub {
-    font-size: 12.5px;
-    color: var(--text-muted);
-    margin-bottom: 14px;
-    line-height: 1.6;
-  }
-  .footer-link {
-    display: inline-block;
-    font-size: 13.5px;
-    font-weight: 600;
-    color: var(--blue);
-    text-decoration: none;
-    padding: 9px 20px;
-    border: 1px solid var(--blue-mid);
-    border-radius: var(--radius-sm);
-    background: var(--surface);
-    transition: background 0.15s ease;
-  }
-  .footer-link:hover {
-    background: var(--blue-light);
-  }
-</style>
+</div><!-- /#appContent -->
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+
 
 <script>
   const fixedState = new Set();
-
-  /* ===== 最新の当せん番号 ===== */
-  const RESULTS_URL = 'loto6.csv';
-  const SALES_CUTOFF_MIN = 18 * 60 + 30; // 抽選日の購入締切 18:30
-  const WEEK = ['日', '月', '火', '水', '木', '金', '土'];
-  const DAY_MS = 86400000;
-
-  let drawData = null;      // { updated, draws: [...] }
-  let drawLoadFailed = false;
-
-  function jstNow() {
-    // 端末のローカル時刻をそのまま使う(サーバー時刻とのズレは許容)
-    return new Date();
-  }
-
-  function isDrawDay(d) {
-    const w = d.getDay();
-    return w === 1 || w === 4; // 月・木
-  }
-
-  function nextDrawDate() {
-    const now = jstNow();
-    let d = new Date(now);
-    const n = { min: d.getHours() * 60 + d.getMinutes() };
-    if (!(isDrawDay(d) && n.min < SALES_CUTOFF_MIN)) {
-      d = new Date(d.getTime() + DAY_MS);
-    }
-    while (!isDrawDay(d)) {
-      d = new Date(d.getTime() + DAY_MS);
-    }
-    const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, '0'), day = String(d.getDate()).padStart(2, '0');
-    return `${y}-${m}-${day}`;
-  }
-
-  function formatDateJa(iso, withYear) {
-    const [y, m, d] = iso.split('-').map(Number);
-    const w = WEEK[new Date(y, m - 1, d).getDay()];
-    return withYear === false ? `${m}/${d}(${w})` : `${y}/${m}/${d}(${w})`;
-  }
-
-  function yen(n) {
-    return '¥' + Number(n || 0).toLocaleString('ja-JP');
-  }
-
-  // ---- 当せん番号データ(CSVから読み込み) ----
-  async function loadDrawData() {
-    try {
-      const res = await fetch(RESULTS_URL, { cache: 'no-cache' });
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      const buf = await res.arrayBuffer();
-      let text;
-      try {
-        text = new TextDecoder('shift_jis').decode(buf);
-        if (!text.includes('開催回')) throw new Error('retry-utf8');
-      } catch (e) {
-        text = new TextDecoder('utf-8').decode(buf);
-      }
-      const draws = parseCsvToDraws(text);
-      if (!draws.length) throw new Error('empty');
-      draws.sort((a, b) => a.no - b.no);
-      drawData = { draws, updated: draws[draws.length - 1].date };
-    } catch (e) {
-      drawLoadFailed = true;
-      console.warn('当せん番号データを読み込めませんでした:', e);
-    }
-    renderLatest();
-  }
-
-  // CSV(開催回,日付,第1〜6数字,BONUS数字,…賞金,キャリーオーバー)を draws 形式へ変換
-  function parseCsvToDraws(text) {
-    const lines = text.split(/\r?\n/).filter(l => l.trim());
-    if (!lines.length) return [];
-    const header = lines[0].split(',').map(h => h.trim());
-    const col = name => header.indexOf(name);
-    const iNo = col('開催回'), iDate = col('日付'), iBonus = col('BONUS数字');
-    const iMain = ['第1数字','第2数字','第3数字','第4数字','第5数字','第6数字'].map(col);
-    const iCarry = col('キャリーオーバー');
-
-    const out = [];
-    for (let i = 1; i < lines.length; i++) {
-      const c = lines[i].split(',');
-      if (c.length < 9) continue;
-      const main = iMain.map(j => parseInt(c[j], 10));
-      if (main.some(isNaN)) continue;
-      const dp = (c[iDate] || '').trim().split('/');
-      const date = dp.length === 3
-        ? `${dp[0]}-${String(+dp[1]).padStart(2,'0')}-${String(+dp[2]).padStart(2,'0')}` : '';
-      out.push({
-        no: parseInt(c[iNo], 10),
-        date,
-        main: main.sort((a, b) => a - b),
-        bonus: parseInt(c[iBonus], 10),
-        carryover: iCarry >= 0 ? (parseInt(c[iCarry], 10) || 0) : 0
-      });
-    }
-    return out;
-  }
-
-  function renderLatest() {
-    const el = document.getElementById('latestBody');
-    const next = nextDrawDate();
-    const nextChip = `<span class="meta-chip strong">次回 ${formatDateJa(next)} 抽選(購入は18:30まで)</span>`;
-    if (!drawData) {
-      el.innerHTML = `<p class="muted-msg">${drawLoadFailed
-        ? '当せん番号を読み込めませんでした。時間をおいて再度お試しください。'
-        : '当せん番号を読み込んでいます…'}</p>`;
-      return;
-    }
-    const d = drawData.draws[drawData.draws.length - 1];
-    const updated = drawData.updated ? drawData.updated.slice(0, 10) : '';
-    el.innerHTML = `
-      <div class="latest-head">
-        <span class="latest-draw">第${d.no}回<span class="latest-date">${formatDateJa(d.date)}</span></span>
-      </div>
-      <div class="latest-balls">
-        ${d.main.map(n => `<span class="ball">${n}</span>`).join('')}
-        <span class="ball ball-bonus">${d.bonus}</span><span class="bonus-label">BONUS</span>
-      </div>
-      <div class="latest-meta">
-        ${d.carryover ? `<span class="meta-chip">キャリーオーバー ${yen(d.carryover)}</span>` : ''}
-        ${nextChip}
-      </div>
-      <p class="source-note">出典: <a href="https://www.mizuhobank.co.jp/takarakuji/check/loto/loto6/index.html" target="_blank" rel="noopener">みずほ銀行 当せん番号案内</a>${updated ? `(${updated.replace(/-/g, '/')} 更新)` : ''}。正式な当せん確認は宝くじ公式サイト等でも行ってください。</p>`;
-  }
-
-  loadDrawData();
 
   // 過去の傾向ピル:クリックでスライダー/入力値を即セット
   // track=true のときだけGA4に送信(おまかせ設定からの内部呼び出しと区別するため)
@@ -848,40 +987,834 @@
     area.classList.add('show');
 
     if (results.length === 0) {
+      document.getElementById('resultActions').innerHTML = '';
       body.innerHTML = '<div class="err">条件に合う組み合わせが見つかりませんでした。<br>条件を少し緩めてみてください。</div>';
       return;
     }
 
-    body.innerHTML = results.map((r, i) => {
+    lastResults = results;
+    lastFixed = fixed;
+    renderResults();
+    showAd();
+  }
+
+  function renderResults() {
+    const body = document.getElementById('resultBody');
+    const actions = document.getElementById('resultActions');
+    const results = lastResults;
+    const fixed = lastFixed;
+    const target = nextDrawDate();
+    const allSaved = results.every(r => isSaved(r.nums, target));
+    actions.innerHTML = `
+      <button type="button" class="mini-btn" onclick="copyAllResults()">すべてコピー</button>
+      <button type="button" class="mini-btn ${allSaved ? 'done' : 'primary'}" onclick="saveResults()" ${allSaved ? 'disabled' : ''}>${allSaved ? '保存済み' : 'すべて保存'}</button>`;
+
+    body.innerHTML = `<p class="save-target">保存すると ${formatDateJa(target)} 抽選分として履歴に記録し、抽選後に自動で照合します</p>` + results.map((r, i) => {
       const numsHtml = r.nums.map(n =>
         `<div class="rn ${fixed.includes(n) ? 'rn-fixed' : 'rn-normal'}">${n}</div>`
       ).join('');
       const div = (i < results.length - 1) ? '<div class="divider"></div>' : '';
-      const consecChip = r.consec
-        ? '<span class="meta-chip" style="color:var(--blue);">連続あり</span>'
-        : '<span class="meta-chip">連続なし</span>';
+      const saved = isSaved(r.nums, target);
       return `<div class="result-set">
-        <div class="set-label">セット ${i + 1}</div>
-        <div class="result-nums">${numsHtml}</div>
-        <div class="meta-row">
-          <span class="meta-chip">合計 ${r.sum}</span>
-          <span class="meta-chip">前半 ${r.frontCnt} / 後半 ${6 - r.frontCnt}</span>
-          <span class="meta-chip">奇数 ${r.oddCnt} / 偶数 ${6 - r.oddCnt}</span>
-          ${consecChip}
+        <div class="set-label-row">
+          <div class="set-label">セット ${i + 1}</div>
+          <div class="set-actions">
+            <button type="button" class="mini-btn" onclick="copyResult(${i})" aria-label="セット${i + 1}をコピー">コピー</button>
+            <button type="button" class="mini-btn ${saved ? 'done' : 'primary'}" onclick="saveResults(${i})" ${saved ? 'disabled' : ''} aria-label="セット${i + 1}を保存">${saved ? '保存済み' : '保存'}</button>
+          </div>
         </div>
+        <div class="result-nums">${numsHtml}</div>
+        <div class="meta-row">${statChips(r.nums)}</div>
+        ${backtestHtml(r.nums)}
       </div>${div}`;
-    }).join('');
+    }).join('') + `<p class="source-note">「過去実績」は、その組み合わせを第1回から全回購入していた場合の集計です。抽せんは毎回独立しているため、過去の結果が次回の当せんやすさを示すものではありません。</p>`;
+  }
+
+  // この組み合わせを第1回から買い続けていたら何等が何回当たっていたか
+  function backtestHtml(nums) {
+    if (!drawData || !drawData.draws.length) return '';
+    const cnt = [0, 0, 0, 0, 0, 0];
+    drawData.draws.forEach(d => {
+      const g = judge(nums, d).grade;
+      if (g) cnt[g]++;
+    });
+    const total = cnt[1] + cnt[2] + cnt[3] + cnt[4] + cnt[5];
+    const parts = [];
+    for (let g = 1; g <= 5; g++) if (cnt[g]) parts.push(`${g}等 ${cnt[g]}回`);
+    const detail = parts.length ? parts.join(' / ') : '当せんなし';
+    return `<div class="backtest-row">
+      <span class="backtest-label">この組み合わせの過去実績</span>
+      <span class="backtest-val">${detail}</span>
+      <span class="backtest-note">全${drawData.draws.length}回中 ${total}回</span>
+    </div>`;
   }
 
   function showErr(msg) {
     document.getElementById('resultArea').classList.add('show');
+    document.getElementById('resultActions').innerHTML = '';
     document.getElementById('resultBody').innerHTML = `<div class="err">${msg}</div>`;
   }
 
+  /* =========================================================
+     追加機能: コピー / 履歴保存 / 当選照合
+     - 履歴はこのブラウザ内(localStorage)だけに保存し、外部には送信しません
+     - 当せん番号は同じサイト内の loto6_results.json を読み込みます
+       (GitHub Actions がみずほ銀行の公開データから抽選日に自動更新)
+     ========================================================= */
+  const RESULTS_URL = 'loto6.csv';
+  const HISTORY_KEY = 'loto6lab_history_v1';
+  const HISTORY_MAX = 300;
+  const SALES_CUTOFF_MIN = 18 * 60 + 30; // 抽選日の購入締切 18:30
+  const WEEK = ['日', '月', '火', '水', '木', '金', '土'];
+  const DAY_MS = 86400000;
+
+  let lastResults = [];
+  let lastFixed = [];
+  let drawData = null;      // { updated, draws: [...] }
+  let drawLoadFailed = false;
+
+  const pad2 = n => String(n).padStart(2, '0');
+  const yen = n => (n == null ? '' : n.toLocaleString('ja-JP') + '円');
+  const track = (name, label) => {
+    if (typeof gtag === 'function') gtag('event', name, { event_category: 'engagement', event_label: label });
+  };
+
+  // ---- 日付(すべて日本時間で計算) ----
+  function jstNow() {
+    const parts = {};
+    new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Asia/Tokyo', year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', hourCycle: 'h23'
+    }).formatToParts(new Date()).forEach(p => { parts[p.type] = p.value; });
+    return { y: +parts.year, m: +parts.month, d: +parts.day, min: (+parts.hour % 24) * 60 + +parts.minute };
+  }
+  const isoToUtc = iso => { const [y, m, d] = iso.split('-').map(Number); return Date.UTC(y, m - 1, d); };
+  const utcToIso = t => { const x = new Date(t); return `${x.getUTCFullYear()}-${pad2(x.getUTCMonth() + 1)}-${pad2(x.getUTCDate())}`; };
+  const isDrawDay = t => { const w = new Date(t).getUTCDay(); return w === 1 || w === 4; };
+
+  // 次に購入できる抽選日(月・木。当日は18:30まで)
+  function nextDrawDate() {
+    const n = jstNow();
+    let t = Date.UTC(n.y, n.m - 1, n.d);
+    if (!(isDrawDay(t) && n.min < SALES_CUTOFF_MIN)) {
+      do { t += DAY_MS; } while (!isDrawDay(t));
+    }
+    return utcToIso(t);
+  }
+  function formatDateJa(iso, withYear) {
+    const t = isoToUtc(iso); const x = new Date(t);
+    return `${withYear ? x.getUTCFullYear() + '年' : ''}${x.getUTCMonth() + 1}月${x.getUTCDate()}日(${WEEK[x.getUTCDay()]})`;
+  }
+
+  // ---- 当せん番号データ(CSVから読み込み) ----
+  async function loadDrawData() {
+    try {
+      const res = await fetch(RESULTS_URL, { cache: 'no-cache' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const buf = await res.arrayBuffer();
+      // Shift_JIS / UTF-8 の両方に対応
+      let text;
+      try {
+        text = new TextDecoder('shift_jis').decode(buf);
+        if (!text.includes('開催回')) throw new Error('retry-utf8');
+      } catch (e) {
+        text = new TextDecoder('utf-8').decode(buf);
+      }
+      const draws = parseCsvToDraws(text);
+      if (!draws.length) throw new Error('empty');
+      draws.sort((a, b) => a.no - b.no);
+      drawData = { draws, updated: draws[draws.length - 1].date };
+    } catch (e) {
+      drawLoadFailed = true;
+      console.warn('当せん番号データを読み込めませんでした:', e);
+    }
+    renderLatest();
+    renderHistory();
+    renderMemberAnalysis();
+  }
+
+  // CSV(開催回,日付,第1〜6数字,BONUS数字,…賞金,キャリーオーバー)を既存の draws 形式へ変換
+  function parseCsvToDraws(text) {
+    const lines = text.split(/\r?\n/).filter(l => l.trim());
+    if (!lines.length) return [];
+    const header = lines[0].split(',').map(h => h.trim());
+    const col = name => header.indexOf(name);
+    const iNo = col('開催回'), iDate = col('日付'), iBonus = col('BONUS数字');
+    const iMain = ['第1数字','第2数字','第3数字','第4数字','第5数字','第6数字'].map(col);
+    const iCarry = col('キャリーオーバー');
+    const prizeCols = [1,2,3,4,5].map(g => ({
+      grade: g, amount: col(g + '等賞金'), count: col(g + '等口数')
+    }));
+
+    const out = [];
+    for (let i = 1; i < lines.length; i++) {
+      const c = lines[i].split(',');
+      if (c.length < 9) continue;
+      const main = iMain.map(j => parseInt(c[j], 10));
+      if (main.some(isNaN)) continue;
+      // 日付 2026/9/17 → 2026-09-17
+      const dp = (c[iDate] || '').trim().split('/');
+      const date = dp.length === 3
+        ? `${dp[0]}-${pad2(+dp[1])}-${pad2(+dp[2])}` : '';
+      out.push({
+        no: parseInt(c[iNo], 10),
+        date,
+        main: main.sort((a, b) => a - b),
+        bonus: parseInt(c[iBonus], 10),
+        carryover: iCarry >= 0 ? (parseInt(c[iCarry], 10) || 0) : 0,
+        prizes: prizeCols
+          .filter(p => p.amount >= 0)
+          .map(p => ({
+            grade: p.grade,
+            amount: parseInt(c[p.amount], 10) || 0,
+            count: p.count >= 0 ? (parseInt(c[p.count], 10) || 0) : 0
+          }))
+      });
+    }
+    return out;
+  }
+
+  // 予想の対象日以降で最初の抽選(年末年始など抽選がない日にも対応)
+  function findDrawFor(targetIso) {
+    if (!drawData) return null;
+    return drawData.draws.find(d => d.date >= targetIso) || null;
+  }
+
+  const ZONES = [[1, 9, '1〜9'], [10, 19, '10台'], [20, 29, '20台'], [30, 39, '30台'], [40, 43, '40〜43']];
+
+  // 6個の数字から、桁別分布と基本指標のチップHTMLを作る
+  function statChips(nums) {
+    const sorted = [...nums].sort((a, b) => a - b);
+    const sum = sorted.reduce((a, b) => a + b, 0);
+    const odd = sorted.filter(n => n % 2 === 1).length;
+    const front = sorted.filter(n => n <= 21).length;
+    const hasConsec = sorted.some((x, i) => i > 0 && x - sorted[i - 1] === 1);
+    const zones = ZONES.map(([lo, hi, label]) => {
+      const c = sorted.filter(n => n >= lo && n <= hi).length;
+      return c ? `${label}:${c}` : null;
+    }).filter(Boolean).join(' / ');
+    return `<span class="meta-chip">合計 ${sum}</span>
+      <span class="meta-chip">前半 ${front} / 後半 ${6 - front}</span>
+      <span class="meta-chip">奇数 ${odd} / 偶数 ${6 - odd}</span>
+      ${hasConsec ? '<span class="meta-chip" style="color:var(--blue);">連続あり</span>'
+                  : '<span class="meta-chip">連続なし</span>'}
+      <span class="meta-chip">${zones}</span>`;
+  }
+
+  // 結果待ちの予想向け:この組み合わせが過去に何等だったかを短く表示
+  function pastRecordHtml(nums) {
+    if (!drawData || !drawData.draws.length) return '';
+    const cnt = [0, 0, 0, 0, 0, 0];
+    drawData.draws.forEach(d => {
+      const g = judge(nums, d).grade;
+      if (g) cnt[g]++;
+    });
+    const parts = [];
+    for (let g = 1; g <= 5; g++) if (cnt[g]) parts.push(`${g}等${cnt[g]}`);
+    return `<br><span class="past-record">${parts.length ? '過去 ' + parts.join('・') : '過去の当せんなし'}</span>`;
+  }
+
+  function judge(nums, draw) {
+    const main = new Set(draw.main);
+    const match = nums.filter(n => main.has(n)).length;
+    const bonusHit = nums.includes(draw.bonus);
+    let grade = 0;
+    if (match === 6) grade = 1;
+    else if (match === 5 && bonusHit) grade = 2;
+    else if (match === 5) grade = 3;
+    else if (match === 4) grade = 4;
+    else if (match === 3) grade = 5;
+    const prize = (draw.prizes || []).find(p => p.grade === grade);
+    return { match, bonusHit, grade, amount: prize ? prize.amount : null };
+  }
+
+  function renderLatest() {
+    const el = document.getElementById('latestBody');
+    const next = nextDrawDate();
+    const nextChip = `<span class="meta-chip strong">次回 ${formatDateJa(next)} 抽選(購入は18:30まで)</span>`;
+    if (!drawData) {
+      el.innerHTML = `<p class="muted-msg">${drawLoadFailed
+        ? '当せん番号データを読み込めませんでした。時間をおいてページを再読み込みしてください。保存した予想は抽選結果が読み込めしだい照合されます。'
+        : '当せん番号を読み込んでいます…'}</p><div class="latest-meta">${nextChip}</div>`;
+      return;
+    }
+    const d = drawData.draws[drawData.draws.length - 1];
+    const first = (d.prizes || []).find(p => p.grade === 1);
+    const firstText = first ? (first.count ? `1等 ${first.count}口 ${yen(first.amount)}` : '1等 該当なし') : '';
+    const updated = drawData.updated ? drawData.updated.slice(0, 10) : '';
+    el.innerHTML = `
+      <div class="latest-head">
+        <div><span class="latest-draw">第${d.no}回</span><span class="latest-date">${formatDateJa(d.date, true)}</span></div>
+      </div>
+      <div class="latest-balls" aria-label="本数字 ${d.main.join('、')}、ボーナス数字 ${d.bonus}">
+        ${d.main.map(n => `<div class="ball">${n}</div>`).join('')}
+        <span class="bonus-label">ボーナス</span><div class="ball ball-bonus">${d.bonus}</div>
+      </div>
+      <div class="latest-meta">${statChips(d.main)}</div>
+      <div class="latest-meta">
+        ${firstText ? `<span class="meta-chip">${firstText}</span>` : ''}
+        ${d.carryover ? `<span class="meta-chip">キャリーオーバー ${yen(d.carryover)}</span>` : ''}
+        ${nextChip}
+      </div>
+      <p class="source-note">出典: <a href="${drawData.sourceUrl || 'https://www.mizuhobank.co.jp/takarakuji/check/loto/loto6/index.html'}" target="_blank" rel="noopener">みずほ銀行 当せん番号案内</a>${updated ? `(${updated.replace(/-/g, '/')} 更新)` : ''}。正式な当せん確認は宝くじ公式サイト等でも行ってください。</p>`;
+  }
+
+  // ---- 履歴(localStorage) ----
+  function loadHistory() {
+    try {
+      const arr = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      return Array.isArray(arr)
+        ? arr.filter(h => h && Array.isArray(h.nums) && h.nums.length === 6 && h.target)
+             .map(h => Object.assign(h, { nums: h.nums.map(Number).sort((a, b) => a - b) }))
+        : [];
+    } catch (e) { return []; }
+  }
+  function storeHistory(list) {
+    try {
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(list.slice(0, HISTORY_MAX)));
+      return true;
+    } catch (e) {
+      showToast('このブラウザでは履歴を保存できませんでした(プライベートモード等)');
+      return false;
+    }
+  }
+  const comboKey = nums => nums.slice().sort((a, b) => a - b).join(',');
+  function isSaved(nums, target) {
+    const key = comboKey(nums);
+    return loadHistory().some(h => h.target === target && comboKey(h.nums) === key);
+  }
+
+  function saveResults(index) {
+    const target = nextDrawDate();
+    const picks = index === undefined ? lastResults : [lastResults[index]];
+    const list = loadHistory();
+    let added = 0;
+    picks.forEach(r => {
+      if (!r || list.some(h => h.target === target && comboKey(h.nums) === r.key)) return;
+      list.unshift({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 7), nums: r.nums.slice(), target, savedAt: new Date().toISOString() });
+      added++;
+    });
+    if (added === 0) { showToast('すでに保存されています'); return; }
+    if (!storeHistory(list)) return;
+    track('tool_save', index === undefined ? 'save_all' : 'save_one');
+    showToast(`${formatDateJa(target)} 抽選分として${added}口を保存しました`);
+    renderResults();
+    renderHistory();
+  }
+
+  function deleteHistory(id) {
+    storeHistory(loadHistory().filter(h => h.id !== id));
+    renderHistory();
+    if (lastResults.length) renderResults();
+  }
+  function clearHistory() {
+    if (!confirm('保存した予想履歴をすべて削除します。よろしいですか?')) return;
+    storeHistory([]);
+    renderHistory();
+    if (lastResults.length) renderResults();
+    showToast('履歴を削除しました');
+  }
+
+  // ===== 分析 =====
+  function renderMemberAnalysis() {
+    if (!drawData || !drawData.draws.length) return;
+    const draws = drawData.draws;
+    renderGosata(draws);
+    renderDemoku(draws);
+    renderKeta(draws);
+    renderTrend(draws);
+    renderAishoGrid();
+  }
+
+  function renderGosata(draws) {
+    const latest = draws[draws.length - 1].no;
+    const info = [];
+    let allTimeMax = { n: 0, gap: 0 };
+    for (let n = 1; n <= 43; n++) {
+      const appear = [];
+      draws.forEach(d => { if (d.main.includes(n)) appear.push(d.no); });
+      if (!appear.length) continue;
+      let maxGap = 0;
+      for (let i = 1; i < appear.length; i++) {
+        maxGap = Math.max(maxGap, appear[i] - appear[i - 1]);
+      }
+      if (maxGap > allTimeMax.gap) allTimeMax = { n, gap: maxGap };
+      info.push({ n, gap: latest - appear[appear.length - 1], maxGap });
+    }
+    info.sort((a, b) => b.gap - a.gap || a.n - b.n);
+
+    const rows = info.slice(0, 10).map((g, i) => {
+      const toSelf = g.maxGap - g.gap;      // 自己記録まであと何回
+      const toAll = allTimeMax.gap - g.gap; // 歴代記録まであと何回
+      let watch = '', cls = '';
+      if (toSelf <= 0) {
+        watch = `<span class="watch hot">自己記録を更新中(${g.gap}回目)</span>`;
+        cls = 'hot';
+      } else if (toSelf <= 5) {
+        watch = `<span class="watch hot">自己最長${g.maxGap}回まで あと${toSelf}回</span>`;
+        cls = 'hot';
+      } else {
+        watch = `<span class="watch">自己最長${g.maxGap}回まで あと${toSelf}回</span>`;
+      }
+      const bar = Math.min(100, Math.round(g.gap / Math.max(g.maxGap, 1) * 100));
+      return `<div class="gosata-row ${cls}">
+        <span class="gosata-pos">${i + 1}位</span>
+        <span class="gosata-num ${cls}">${g.n}</span>
+        <span class="gosata-info">
+          <span class="gosata-main">${g.gap}回連続で不出現</span>
+          <span class="gosata-bar"><span class="gosata-bar-fill" style="width:${bar}%"></span></span>
+          ${watch}
+        </span>
+      </div>`;
+    }).join('');
+
+    const top3 = info.slice(0, 3).map(g => g.n);
+    document.getElementById('gosataBody').innerHTML = rows +
+      `<div class="btn-aisho-row">
+        <button type="button" class="mini-btn primary" onclick="applyGosata([${top3}])">
+          上位3個(${top3.join('・')})を固定数字にセット</button>
+        <span class="btn-note">※現在の固定数字は置き換わります</span>
+      </div>
+      <p class="source-note">
+        全数字の歴代最長記録は <strong>${allTimeMax.n}</strong> の <strong>${allTimeMax.gap}回</strong> 連続不出現です。
+        バーは自己最長記録に対する現在の進捗を表しています。</p>`;
+  }
+
+  // 固定数字を入れ替える共通処理(既存の選択があれば確認する)
+  function replaceFixed(nums) {
+    if (fixedState.size) {
+      const cur = Array.from(fixedState).sort((a, b) => a - b).join('・');
+      if (!confirm(`現在の固定数字(${cur})を、${nums.join('・')} に置き換えます。よろしいですか?`)) {
+        return false;
+      }
+    }
+    fixedState.clear();
+    const skipped = [];
+    nums.forEach(n => {
+      if (bannedState.has(n)) skipped.push(n);
+      else fixedState.add(n);
+    });
+    syncDisabled();
+    updateChips('fixedChips', fixedState, 'chip-fixed');
+    showToast(skipped.length
+      ? `固定数字にセットしました(${skipped.join('・')}は禁止数字のため除外)`
+      : '固定数字にセットしました');
+    document.getElementById('fixedGrid').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return true;
+  }
+
+  // ご無沙汰上位を固定数字にセット
+  function applyGosata(nums) {
+    if (replaceFixed(nums) && typeof gtag === 'function') {
+      gtag('event', 'tool_apply_gosata');
+    }
+  }
+
+  function renderDemoku(draws) {
+    const list = draws.slice(-30);
+    // 直前の回を引っ張り判定に使うため、1つ前から参照できるようにする
+    const startIdx = draws.length - list.length;
+
+    let html = '<tr><th>回</th>';
+    for (let n = 1; n <= 43; n++) html += `<th>${n}</th>`;
+    html += '</tr>';
+
+    list.forEach((d, i) => {
+      const prev = draws[startIdx + i - 1];
+      const next = draws[startIdx + i + 1];
+      // 連番になっている数字を集める
+      const consecSet = new Set();
+      d.main.forEach((x, j) => {
+        if (j > 0 && x - d.main[j - 1] === 1) { consecSet.add(x); consecSet.add(d.main[j - 1]); }
+      });
+      html += `<tr><td class="kai">${d.no}</td>`;
+      for (let n = 1; n <= 43; n++) {
+        if (d.main.includes(n)) {
+          const isConsec = consecSet.has(n);
+          // 前回から引っ張られた or 次回へ引っ張られる、どちらも網掛け対象
+          const isPull = (prev && prev.main.includes(n)) || (next && next.main.includes(n));
+          let cls = '';
+          if (isConsec && isPull) cls = 'cell-both';
+          else if (isConsec) cls = 'cell-consec';
+          else if (isPull) cls = 'cell-pull';
+          html += `<td class="${cls}"><span class="dot-main"></span></td>`;
+        } else if (d.bonus === n) {
+          html += '<td><span class="dot-bonus"></span></td>';
+        } else {
+          html += '<td></td>';
+        }
+      }
+      html += '</tr>';
+    });
+    document.getElementById('demokuTable').innerHTML = html;
+  }
+
+
+  function renderKeta(draws) {
+    const list = draws.slice(-30);
+    let html = '<tr><th>回</th>' + ZONES.map(z => `<th>${z[2]}</th>`).join('') + '</tr>';
+    list.forEach(d => {
+      html += `<tr><td class="kai">${d.no}</td>`;
+      ZONES.forEach(([lo, hi]) => {
+        const c = d.main.filter(n => n >= lo && n <= hi).length;
+        html += `<td>${c ? c : ''}</td>`;
+      });
+      html += '</tr>';
+    });
+    document.getElementById('ketaTable').innerHTML = html;
+
+    const total = draws.length * 6;
+    document.getElementById('ketaStatsBody').innerHTML =
+      '<div class="trend-head">ゾーン別の出現割合(全期間)</div><div class="trend-grid">' +
+      ZONES.map(([lo, hi, label]) => {
+        let c = 0;
+        draws.forEach(d => { c += d.main.filter(n => n >= lo && n <= hi).length; });
+        return `<div class="trend-box">
+          <div class="trend-label">${label}</div>
+          <div class="trend-val">${(c / total * 100).toFixed(1)}%</div>
+          <div class="trend-note">${c}個</div>
+        </div>`;
+      }).join('') + '</div>';
+  }
+
+  function analyzeDraws(list) {
+    const n = list.length;
+    if (!n) return null;
+    const sums = list.map(d => d.main.reduce((a, b) => a + b, 0));
+    const odds = list.map(d => d.main.filter(x => x % 2 === 1).length);
+    const fronts = list.map(d => d.main.filter(x => x <= 21).length);
+    const consec = list.filter(d => d.main.some((x, i) => i > 0 && x - d.main[i - 1] === 1)).length;
+    const mode = arr => {
+      const c = {};
+      arr.forEach(v => { c[v] = (c[v] || 0) + 1; });
+      return Object.entries(c).sort((a, b) => b[1] - a[1])[0];
+    };
+    return {
+      n,
+      sumAvg: Math.round(sums.reduce((a, b) => a + b, 0) / n),
+      sumMin: Math.min(...sums), sumMax: Math.max(...sums),
+      oddMode: mode(odds), frontMode: mode(fronts),
+      consec, consecPct: (consec / n * 100).toFixed(1)
+    };
+  }
+
+  function trendGrid(a) {
+    if (!a) return '';
+    return `<div class="trend-grid">
+      <div class="trend-box"><div class="trend-label">合計値の平均</div>
+        <div class="trend-val">${a.sumAvg}</div>
+        <div class="trend-note">${a.sumMin}〜${a.sumMax}(理論平均132)</div></div>
+      <div class="trend-box"><div class="trend-label">最も多い奇数の個数</div>
+        <div class="trend-val">${a.oddMode[0]}個</div>
+        <div class="trend-note">${a.n}回中${a.oddMode[1]}回</div></div>
+      <div class="trend-box"><div class="trend-label">最も多い前半の個数</div>
+        <div class="trend-val">${a.frontMode[0]}個</div>
+        <div class="trend-note">${a.n}回中${a.frontMode[1]}回</div></div>
+      <div class="trend-box"><div class="trend-label">連番の発生</div>
+        <div class="trend-val">${a.consecPct}%</div>
+        <div class="trend-note">${a.n}回中${a.consec}回</div></div>
+    </div>`;
+  }
+
+  function renderTrend(draws) {
+    const a10 = analyzeDraws(draws.slice(-10));
+    const a50 = analyzeDraws(draws.slice(-50));
+    document.getElementById('trendBody').innerHTML =
+      '<div class="trend-head">直近10回</div>' + trendGrid(a10) +
+      `<div class="btn-aisho-row">
+        <button type="button" class="mini-btn primary"
+          onclick="applyTrend(${a10.frontMode[0]}, ${a10.oddMode[0]}, ${Math.max(21, a10.sumAvg - 20)}, ${Math.min(258, a10.sumAvg + 20)})">
+          直近10回の傾向を条件にセット</button>
+        <span class="btn-note">※前半・奇数・合計値の設定が上書きされます</span>
+      </div>` +
+      '<div class="trend-head">直近50回</div>' + trendGrid(a50) +
+      `<div class="btn-aisho-row">
+        <button type="button" class="mini-btn primary"
+          onclick="applyTrend(${a50.frontMode[0]}, ${a50.oddMode[0]}, ${Math.max(21, a50.sumAvg - 20)}, ${Math.min(258, a50.sumAvg + 20)})">
+          直近50回の傾向を条件にセット</button>
+        <span class="btn-note">※前半・奇数・合計値の設定が上書きされます</span>
+      </div>` +
+      `<div class="trend-head">全期間(第1回〜第${draws[draws.length-1].no}回)</div>` + trendGrid(analyzeDraws(draws));
+  }
+
+  // 傾向を当選条件にセット
+  function applyTrend(front, odd, sumMin, sumMax) {
+    ['useFront', 'useOdd', 'useSum'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el && !el.checked) { el.checked = true; }
+    });
+    toggleCond('front'); toggleCond('odd'); toggleCond('sum');
+    setFrontCount(front);
+    setOddCount(odd);
+    setSumRange(sumMin, sumMax);
+    showToast('当選条件にセットしました');
+    document.getElementById('sumMin').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (typeof gtag === 'function') gtag('event', 'tool_apply_trend');
+  }
+
+  // ===== 相性分析 =====
+  let aishoAxis = null;
+
+  function renderAishoGrid() {
+    let html = '';
+    for (let n = 1; n <= 43; n++) {
+      html += `<div class="num-btn" data-aisho="${n}" onclick="selectAisho(${n})">${n}</div>`;
+    }
+    document.getElementById('aishoGrid').innerHTML = html;
+  }
+
+  function selectAisho(n) {
+    aishoAxis = (aishoAxis === n) ? null : n;
+    document.querySelectorAll('#aishoGrid .num-btn').forEach(b => {
+      b.classList.toggle('selected-fixed', +b.dataset.aisho === aishoAxis);
+    });
+    renderAishoResult();
+    if (aishoAxis && typeof gtag === 'function') {
+      gtag('event', 'tool_aisho', { event_label: 'axis_' + aishoAxis });
+    }
+  }
+
+  function renderAishoResult() {
+    const box = document.getElementById('aishoResult');
+    if (!aishoAxis || !drawData) { box.innerHTML = ''; return; }
+    const axis = aishoAxis;
+    const pair = {};
+    let axisCount = 0;
+    drawData.draws.forEach(d => {
+      if (!d.main.includes(axis)) return;
+      axisCount++;
+      d.main.forEach(n => { if (n !== axis) pair[n] = (pair[n] || 0) + 1; });
+    });
+    if (!axisCount) { box.innerHTML = '<p class="muted-msg">データがありません。</p>'; return; }
+
+    const list = Object.entries(pair).map(([n, c]) => ({ n: +n, c }))
+      .sort((a, b) => b.c - a.c || a.n - b.n);
+    const top = list.slice(0, 10);
+    const worst = list.slice(-5).reverse();
+    const max = top[0].c;
+
+    const rowHtml = (x, rank) => `
+      <div class="aisho-row">
+        <span class="aisho-pos">${rank}</span>
+        <span class="aisho-num">${x.n}</span>
+        <span class="aisho-bar"><span class="aisho-bar-fill" style="width:${Math.round(x.c / max * 100)}%"></span></span>
+        <span class="aisho-cnt">${x.c}回</span>
+      </div>`;
+
+    box.innerHTML = `
+      <div class="aisho-head">
+        <strong>${axis}</strong> は全${drawData.draws.length}回中 <strong>${axisCount}回</strong>当せんしています。
+        その${axisCount}回で一緒に出た数字は…
+      </div>
+      <div class="aisho-sec-title">相性の良い数字 TOP10</div>
+      ${top.map((x, i) => rowHtml(x, (i + 1) + '位')).join('')}
+      <div class="btn-aisho-row">
+        <button type="button" class="mini-btn primary" onclick="applyAisho()">軸+上位2個を固定数字にセット</button>
+        <span class="btn-note">※現在の固定数字は置き換わります</span>
+      </div>
+      <div class="aisho-sec-title">一緒に出た回数が少ない数字</div>
+      ${worst.map(x => rowHtml(x, '')).join('')}
+      <p class="source-note">抽せんは毎回独立しているため、相性が良い組み合わせが次回出やすいということはありません。数字選びの切り口のひとつとしてご覧ください。</p>`;
+  }
+
+  function applyAisho() {
+    if (!aishoAxis || !drawData) return;
+    const pair = {};
+    drawData.draws.forEach(d => {
+      if (!d.main.includes(aishoAxis)) return;
+      d.main.forEach(n => { if (n !== aishoAxis) pair[n] = (pair[n] || 0) + 1; });
+    });
+    const top2 = Object.entries(pair).map(([n, c]) => ({ n: +n, c }))
+      .sort((a, b) => b.c - a.c || a.n - b.n).slice(0, 2).map(x => x.n);
+
+    replaceFixed([aishoAxis, ...top2]);
+  }
+
+  function renderHistory() {
+    const body = document.getElementById('historyBody');
+    const actions = document.getElementById('historyActions');
+    const list = loadHistory();
+    if (list.length === 0) {
+      actions.innerHTML = '';
+      body.innerHTML = '<p class="muted-msg">保存した予想はまだありません。生成した番号の「保存」を押すと、ここに記録され、抽選後に当せん番号と自動で照合されます。</p>';
+      return;
+    }
+    actions.innerHTML = `
+      <button type="button" class="mini-btn" onclick="copyHistory()">履歴をコピー</button>
+      <button type="button" class="mini-btn danger" onclick="clearHistory()">すべて削除</button>`;
+
+    // 対象日ごとにまとめる(新しい順)
+    const groups = {};
+    list.forEach(h => { (groups[h.target] = groups[h.target] || []).push(h); });
+    const targets = Object.keys(groups).sort().reverse();
+
+    let checked = 0, wins = 0, winAmount = 0, pending = 0;
+    const html = targets.map(target => {
+      const draw = findDrawFor(target);
+      const items = groups[target];
+      let groupWins = 0;
+      const rows = items.map(h => {
+        let numsHtml, resultHtml;
+        if (draw) {
+          const r = judge(h.nums, draw);
+          checked++;
+          if (r.grade) { wins++; groupWins++; winAmount += r.amount || 0; }
+          const main = new Set(draw.main);
+          numsHtml = h.nums.map(n => {
+            const cls = main.has(n) ? 'hit' : (n === draw.bonus ? 'bonus-hit' : '');
+            return `<div class="sball ${cls}">${n}</div>`;
+          }).join('');
+          resultHtml = r.grade
+            ? `<span class="grade">${r.grade}等</span>${r.amount ? `<span class="amount">${yen(r.amount)}</span>` : ''}`
+            : `はずれ<br> ${r.match}個一致${r.bonusHit ? '+B' : ''}`;
+        } else {
+          pending++;
+          numsHtml = h.nums.map(n => `<div class="sball">${n}</div>`).join('');
+          resultHtml = '結果待ち' + pastRecordHtml(h.nums);
+        }
+        return `<div class="h-row">
+          <div class="h-nums">${numsHtml}</div>
+          <div class="h-result">${resultHtml}</div>
+          <button type="button" class="icon-btn" onclick="deleteHistory('${h.id}')" aria-label="この予想を削除">×</button>
+        </div>`;
+      }).join('');
+
+      const title = draw
+        ? `第${draw.no}回 ${formatDateJa(draw.date)} 抽選分`
+        : `${formatDateJa(target)} 抽選分`;
+      const status = draw
+        ? (groupWins ? `<span class="h-group-status win">${items.length}口中 ${groupWins}口当せん</span>` : `<span class="h-group-status">${items.length}口 当せんなし</span>`)
+        : `<span class="h-group-status">${items.length}口 ${drawLoadFailed ? '照合データなし' : '抽選後に自動で照合します'}</span>`;
+      const drawRow = draw
+        ? `<div class="h-group-draw">当せん番号 ${draw.main.map(n => `<div class="sball draw">${n}</div>`).join('')}<div class="sball draw-bonus">${draw.bonus}</div></div>`
+        : '';
+      return `<div class="h-group"><div class="h-group-head"><span class="h-group-title">${title}</span>${status}</div>${drawRow}${rows}</div>`;
+    }).join('');
+
+    const summary = `<div class="history-summary">
+      <span class="meta-chip">保存 ${list.length}口</span>
+      <span class="meta-chip">照合済み ${checked}口</span>
+      ${pending ? `<span class="meta-chip">結果待ち ${pending}口</span>` : ''}
+      <span class="meta-chip ${wins ? 'strong' : ''}">当せん ${wins}口${winAmount ? ` 合計${yen(winAmount)}` : ''}</span>
+    </div>`;
+    const legend = checked ? `<div class="legend">
+      <span><span class="sball hit"></span>本数字と一致</span>
+      <span><span class="sball bonus-hit"></span>ボーナス数字と一致</span>
+    </div>` : '';
+    body.innerHTML = summary + html + legend;
+  }
+
+  // ---- コピー ----
+  const numsText = nums => nums.map(pad2).join(' ');
+  async function copyText(text) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) {
+      const ta = document.createElement('textarea');
+      ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch (e2) { ok = false; }
+      ta.remove();
+      return ok;
+    }
+  }
+  async function copyResult(i) {
+    const ok = await copyText(numsText(lastResults[i].nums));
+    showToast(ok ? `セット${i + 1}をコピーしました` : 'コピーできませんでした');
+    if (ok) track('tool_copy', 'copy_one');
+  }
+  async function copyAllResults() {
+    const text = `ロト6 予想 ${formatDateJa(nextDrawDate())} 抽選分\n` +
+      lastResults.map((r, i) => `セット${i + 1}: ${numsText(r.nums)}`).join('\n');
+    const ok = await copyText(text);
+    showToast(ok ? `${lastResults.length}セットをコピーしました` : 'コピーできませんでした');
+    if (ok) track('tool_copy', 'copy_all');
+  }
+  async function copyHistory() {
+    const list = loadHistory();
+    const groups = {};
+    list.forEach(h => { (groups[h.target] = groups[h.target] || []).push(h); });
+    const text = Object.keys(groups).sort().reverse().map(t => {
+      const draw = findDrawFor(t);
+      const head = draw ? `第${draw.no}回 ${formatDateJa(draw.date)}` : `${formatDateJa(t)}(結果待ち)`;
+      const lines = groups[t].map(h => {
+        if (!draw) return numsText(h.nums);
+        const r = judge(h.nums, draw);
+        return `${numsText(h.nums)}  ${r.grade ? r.grade + '等' : 'はずれ'}(${r.match}個一致)`;
+      });
+      return [head, ...lines].join('\n');
+    }).join('\n\n');
+    const ok = await copyText(text);
+    showToast(ok ? '履歴をコピーしました' : 'コピーできませんでした');
+  }
+
+  let toastTimer = null;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  // 他のタブで履歴が変わったときも反映
+  window.addEventListener('storage', e => { if (e.key === HISTORY_KEY) { renderHistory(); if (lastResults.length) renderResults(); } });
+
+  /* ===== 広告 =====
+     同じフォルダの ads.txt を読み込み、予想を生成するたびにランダムで1つ表示します。
+     ads.txt には A8.net 等の広告コード(HTML)を貼り、広告と広告の間は「=====」だけの行で区切ります。
+     「#」で始まる行はメモとして無視します。ads.txt が無い・空なら広告枠は表示しません。
+     ※ 広告のクリックを促す文言・自動クリック等は規約違反になるので入れないこと */
+  const ADS_URL = 'ads.txt';
+  let adList = [];
+  let lastAdIndex = -1;
+
+  async function loadAds() {
+    try {
+      const res = await fetch(ADS_URL, { cache: 'no-cache' });
+      if (!res.ok) return;
+      const text = await res.text();
+      adList = text
+        .split(/^\s*={5,}\s*$/m)
+        .map(block => block.split('\n').filter(l => !/^\s*#/.test(l)).join('\n').trim())
+        .filter(block => block.length > 0);
+    } catch (e) { adList = []; }
+  }
+
+  function pickAdIndex() {
+    if (adList.length <= 1) return 0;
+    let i;
+    do { i = Math.floor(Math.random() * adList.length); } while (i === lastAdIndex);
+    return i;
+  }
+
+  function showAd() {
+    const slot = document.getElementById('adSlot');
+    const body = document.getElementById('adBody');
+    if (!adList.length) { slot.hidden = true; return; }
+    const i = pickAdIndex();
+    lastAdIndex = i;
+    body.innerHTML = adList[i];
+    const label = 'ad_' + (i + 1);
+    body.querySelectorAll('a').forEach(a => {
+      a.setAttribute('target', '_blank');
+      a.setAttribute('rel', 'nofollow sponsored noopener');
+      a.addEventListener('click', () => {
+        if (typeof gtag === 'function') gtag('event', 'ad_click', { event_category: 'ad', event_label: label });
+      });
+    });
+    slot.hidden = false;
+    if (typeof gtag === 'function') gtag('event', 'ad_view', { event_category: 'ad', event_label: label });
+  }
+
+  /* ===== 初期化 ===== */
+  renderHistory();
+  loadDrawData();
+  loadAds();
   initGrid('fixedGrid', fixedState, 'fixedChips', 'selected-fixed');
   initGrid('bannedGrid', bannedState, 'bannedChips', 'selected-banned');
-
-  // init consec off
   document.getElementById('ctrlConsec').classList.add('off');
   document.getElementById('labelConsec').classList.add('off');
 </script>
