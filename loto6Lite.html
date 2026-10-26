@@ -485,6 +485,13 @@
   }
   #adBody { text-align: center; font-size: 13px; line-height: 1.7; }
   #adBody img { max-width: 100%; height: auto; }
+  /* ---- safety ---- */
+  .trust-more { color: var(--blue); font-weight: 600; margin-left: 4px; white-space: nowrap; }
+  .safety { max-width: 560px; margin: 18px auto 0; text-align: left; font-size: 12px; color: var(--text-muted); }
+  .safety summary { cursor: pointer; text-align: center; font-weight: 600; color: var(--text); }
+  .safety ul { margin: 10px 0 0 1.2em; line-height: 1.7; }
+  .safety li { margin-bottom: 6px; }
+  .safety strong { color: var(--text); }
 </style>
 </head>
 <body>
@@ -493,7 +500,7 @@
 
 <div class="trust-bar">
   <span class="trust-dot"></span>
-  <span class="trust-text"><strong>ロト6データラボ</strong>の無料ツールです。登録不要、選んだ数字はお使いの端末内だけに保存されます</span>
+  <span class="trust-text"><strong>ロト6データラボ</strong>の無料ツールです。登録不要・PHP不使用。選んだ数字はお使いの端末内だけに保存されます <a class="trust-more" href="#safety" onclick="document.getElementById('safety').open=true">安全性について</a></span>
 </div>
 
 <header>
@@ -768,6 +775,15 @@
     <p class="footer-lead">ロト6データラボ 無料ツール</p>
     <p class="footer-sub">分析の解説記事はnoteで公開しています</p>
     <a class="footer-link" href="https://note.com/profit_0707/n/n2ce9f6a44290" target="_blank" rel="noopener">note で分析記事を読む →</a>
+    <details class="safety" id="safety">
+      <summary>このツールの安全性について</summary>
+      <ul>
+        <li><strong>PHPなどサーバー側のプログラムは使っていません。</strong>HTMLとJavaScriptだけで作った静的なページを、GitHub Pagesで公開しています。2026年10月に話題のPHPの脆弱性の影響は受けない構成です。</li>
+        <li><strong>会員登録・ログインはありません。</strong>名前やメールアドレスなどの個人情報を入力する場所はありません。</li>
+        <li><strong>選んだ数字や保存した予想は、お使いの端末(ブラウザ)の中だけに保存</strong>され、運営者のサーバーには送信されません。</li>
+        <li>アクセス数の把握にGoogleアナリティクスを使っています。予想を生成したあとに「PR」表記の広告が表示されることがあります。</li>
+      </ul>
+    </details>
   </div>
 </footer>
 
