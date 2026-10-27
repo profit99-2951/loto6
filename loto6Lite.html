@@ -3,7 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ロト6 予想ツール(無料)</title>
+<title>ロト6 予想ツール【無料】出目表・ご無沙汰数字・相性分析|ロト6データラボ</title>
+<meta name="description" content="ロト6の無料予想ツール。第1回からの当せん番号データをもとに、出目表・ご無沙汰数字ランキング・相性分析・直近の傾向を見ながら条件つきで予想番号を作れます。登録不要・スマホ対応、予想の保存と抽選後の自動照合も。">
+<link rel="canonical" href="https://profit99-2951.github.io/loto6/loto6Lite.html">
+<meta name="theme-color" content="#F8F7F4">
+
+<!-- SNSでリンクを貼ったときのカード表示 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ロト6データラボ">
+<meta property="og:title" content="ロト6 予想ツール【無料・登録不要】|ロト6データラボ">
+<meta property="og:description" content="出目表・ご無沙汰数字ランキング・相性分析を見ながら、条件つきで予想番号を作れる無料ツール。スマホでそのまま使えます。">
+<meta property="og:url" content="https://profit99-2951.github.io/loto6/loto6Lite.html">
+<meta property="og:image" content="https://profit99-2951.github.io/loto6/ogp.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="ja_JP">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ロト6 予想ツール【無料・登録不要】|ロト6データラボ">
+<meta name="twitter:description" content="出目表・ご無沙汰数字ランキング・相性分析を見ながら、条件つきで予想番号を作れる無料ツール。">
+<meta name="twitter:image" content="https://profit99-2951.github.io/loto6/ogp.png">
+
+<!-- ホーム画面に追加 -->
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ロト6ラボ">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"ロト6 予想ツール(ロト6データラボ)","url":"https://profit99-2951.github.io/loto6/loto6Lite.html","applicationCategory":"UtilitiesApplication","operatingSystem":"iOS, Android, Windows, macOS","inLanguage":"ja","isAccessibleForFree":true,"offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"},"description":"ロト6の無料予想ツール。第1回からの当せん番号データをもとに、出目表・ご無沙汰数字ランキング・相性分析・直近の傾向を見ながら条件つきで予想番号を作れます。登録不要・スマホ対応、予想の保存と抽選後の自動照合も。"}
+</script>
 
 <!-- Google tag (gtag.js) : ロト6データラボ アクセス解析 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-91G6P796K2"></script>
@@ -492,6 +523,20 @@
   .safety ul { margin: 10px 0 0 1.2em; line-height: 1.7; }
   .safety li { margin-bottom: 6px; }
   .safety strong { color: var(--text); }
+  /* ---- share / install ---- */
+  .sheet-backdrop { position: fixed; inset: 0; background: rgba(26,25,23,.45); display: flex; align-items: flex-end; justify-content: center; z-index: 50; }
+  .sheet-backdrop[hidden] { display: none; }
+  .sheet { background: var(--surface); width: 100%; max-width: 480px; border-radius: 16px 16px 0 0; padding: 18px 16px calc(16px + env(safe-area-inset-bottom)); }
+  .sheet-title { font-weight: 700; font-size: 15px; text-align: center; margin-bottom: 10px; }
+  .sheet-preview { white-space: pre-wrap; font-family: inherit; font-size: 12.5px; color: var(--text-muted); background: var(--surface2); border-radius: var(--radius-sm); padding: 10px 12px; margin-bottom: 12px; line-height: 1.6; word-break: break-all; overflow-wrap: anywhere; }
+  .sheet-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .sheet-btn { display: flex; align-items: center; justify-content: center; min-height: 44px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); color: var(--text); font-size: 14px; font-weight: 600; text-decoration: none; font-family: inherit; cursor: pointer; }
+  .sheet-close { width: 100%; margin-top: 10px; min-height: 40px; border: none; background: none; color: var(--text-muted); font-size: 13px; font-family: inherit; cursor: pointer; }
+  .install-tip { position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom)); max-width: 520px; margin: 0 auto; background: var(--surface); border: 1px solid var(--blue-mid); border-radius: var(--radius); box-shadow: 0 6px 24px rgba(0,0,0,.12); padding: 12px 14px; display: flex; gap: 10px; align-items: center; z-index: 40; font-size: 12.5px; line-height: 1.6; }
+  .install-tip[hidden] { display: none; }
+  .install-body { flex: 1; display: flex; flex-direction: column; gap: 2px; color: var(--text-muted); }
+  .install-body strong { color: var(--text); font-size: 13.5px; }
+  .install-actions { display: flex; flex-direction: column; gap: 6px; }
 </style>
 </head>
 <body>
@@ -505,7 +550,7 @@
 
 <header>
   <h1>ロト6 予想ツール</h1>
-  <p>条件を設定して、予想番号を生成します</p>
+  <p>第1回からの当せん番号データをもとに、出目表・ご無沙汰数字・相性分析を見ながら予想番号を作れる無料ツールです</p>
   <a class="guide-link" href="https://note.com/profit_0707/n/n6b3724e94789" target="_blank" rel="noopener">初めての方はこちら:使い方ガイド →</a>
 </header>
 
@@ -789,6 +834,33 @@
 
 </div><!-- /#appContent -->
 
+<!-- シェア先の選択(スマホの共有機能が使えない環境用) -->
+<div class="sheet-backdrop" id="shareSheet" hidden onclick="if(event.target===this)closeShare()">
+  <div class="sheet" role="dialog" aria-label="予想をシェア">
+    <p class="sheet-title">予想をシェア</p>
+    <pre class="sheet-preview" id="sharePreview"></pre>
+    <div class="sheet-btns">
+      <a class="sheet-btn" id="shareX" target="_blank" rel="noopener" onclick="trackShare('x')">Xでシェア</a>
+      <a class="sheet-btn" id="shareThreads" target="_blank" rel="noopener" onclick="trackShare('threads')">Threadsでシェア</a>
+      <a class="sheet-btn" id="shareLine" target="_blank" rel="noopener" onclick="trackShare('line')">LINEで送る</a>
+      <button type="button" class="sheet-btn" onclick="copyShareText()">文章をコピー</button>
+    </div>
+    <button type="button" class="sheet-close" onclick="closeShare()">閉じる</button>
+  </div>
+</div>
+
+<!-- ホーム画面に追加の案内 -->
+<div class="install-tip" id="installTip" hidden>
+  <div class="install-body">
+    <strong>ホーム画面に追加すると便利です</strong>
+    <span id="installText">抽選後の当たり確認が、アプリのようにワンタップで開けます。</span>
+  </div>
+  <div class="install-actions">
+    <button type="button" class="mini-btn primary" id="installBtn" hidden onclick="doInstall()">追加する</button>
+    <button type="button" class="mini-btn" onclick="dismissInstall()">閉じる</button>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 
@@ -1035,6 +1107,7 @@
         <div class="set-label-row">
           <div class="set-label">セット ${i + 1}</div>
           <div class="set-actions">
+            <button type="button" class="mini-btn" onclick="shareResult(${i})" aria-label="セット${i + 1}をシェア">シェア</button>
             <button type="button" class="mini-btn" onclick="copyResult(${i})" aria-label="セット${i + 1}をコピー">コピー</button>
             <button type="button" class="mini-btn ${saved ? 'done' : 'primary'}" onclick="saveResults(${i})" ${saved ? 'disabled' : ''} aria-label="セット${i + 1}を保存">${saved ? '保存済み' : '保存'}</button>
           </div>
@@ -1314,6 +1387,7 @@
     if (!storeHistory(list)) return;
     track('tool_save', index === undefined ? 'save_all' : 'save_one');
     showToast(`${formatDateJa(target)} 抽選分として${added}口を保存しました`);
+    setTimeout(maybeShowInstallTip, 2700);
     renderResults();
     renderHistory();
   }
@@ -1824,6 +1898,99 @@
     slot.hidden = false;
     if (typeof gtag === 'function') gtag('event', 'ad_view', { event_category: 'ad', event_label: label });
   }
+
+  /* ===== シェア ===== */
+  const SHARE_URL = 'https://profit99-2951.github.io/loto6/loto6Lite.html?utm_source=share&utm_medium=social&utm_campaign=user_share';
+  let shareText = '';
+
+  function buildShareText(nums) {
+    const target = nextDrawDate();
+    const list = nums.map(n => String(n).padStart(2, '0')).join(' ');
+    return `ロト6データラボの無料ツールで、${formatDateJa(target)}抽選の予想を作ってみました🎯\n${list}\n#ロト6`;
+  }
+
+  async function shareResult(i) {
+    const r = lastResults[i];
+    if (!r) return;
+    shareText = buildShareText(r.nums);
+    // スマホでは端末の共有メニュー(X・Threads・LINEなど)を開く
+    if (navigator.share) {
+      try {
+        await navigator.share({ text: shareText, url: SHARE_URL });
+        trackShare('native');
+        return;
+      } catch (e) {
+        if (e && e.name === 'AbortError') return;
+      }
+    }
+    openShare();
+  }
+
+  function openShare() {
+    const full = shareText + '\n' + SHARE_URL;
+    document.getElementById('sharePreview').textContent = full;
+    document.getElementById('shareX').href = 'https://x.com/intent/post?text=' + encodeURIComponent(shareText) + '&url=' + encodeURIComponent(SHARE_URL);
+    document.getElementById('shareThreads').href = 'https://www.threads.net/intent/post?text=' + encodeURIComponent(full);
+    document.getElementById('shareLine').href = 'https://line.me/R/share?text=' + encodeURIComponent(full);
+    document.getElementById('shareSheet').hidden = false;
+  }
+  function closeShare() { document.getElementById('shareSheet').hidden = true; }
+  async function copyShareText() {
+    const full = shareText + '\n' + SHARE_URL;
+    try { await navigator.clipboard.writeText(full); showToast('シェア用の文章をコピーしました'); }
+    catch (e) { showToast('コピーできませんでした'); }
+    trackShare('copy');
+  }
+  function trackShare(method) {
+    if (typeof gtag === 'function') gtag('event', 'share', { method: method, content_type: 'prediction' });
+  }
+
+  /* ===== ホーム画面に追加 ===== */
+  const INSTALL_KEY = 'loto6_install_tip_closed';
+  let deferredInstall = null;
+  function isStandalone() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  }
+  function installTipClosed() {
+    try { return localStorage.getItem(INSTALL_KEY) === '1'; } catch (e) { return false; }
+  }
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstall = e;
+  });
+  function maybeShowInstallTip() {
+    if (isStandalone() || installTipClosed()) return;
+    const isIOS = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const btn = document.getElementById('installBtn');
+    const text = document.getElementById('installText');
+    if (deferredInstall) {
+      btn.hidden = false;
+      text.textContent = '抽選後の当たり確認が、アプリのようにワンタップで開けます。';
+    } else if (isIOS) {
+      btn.hidden = true;
+      text.textContent = '画面下の共有ボタン(□に↑)から「ホーム画面に追加」を選ぶと、抽選後の当たり確認がワンタップで開けます。';
+    } else {
+      btn.hidden = true;
+      text.textContent = 'ブラウザのメニュー(︙)から「ホーム画面に追加」を選ぶと、抽選後の当たり確認がワンタップで開けます。';
+    }
+    document.getElementById('installTip').hidden = false;
+    if (typeof gtag === 'function') gtag('event', 'install_tip_view');
+  }
+  async function doInstall() {
+    if (!deferredInstall) return;
+    deferredInstall.prompt();
+    try {
+      const choice = await deferredInstall.userChoice;
+      if (typeof gtag === 'function') gtag('event', 'install_prompt', { outcome: choice.outcome });
+    } catch (e) {}
+    deferredInstall = null;
+    dismissInstall();
+  }
+  function dismissInstall() {
+    document.getElementById('installTip').hidden = true;
+    try { localStorage.setItem(INSTALL_KEY, '1'); } catch (e) {}
+  }
+  if (isStandalone() && typeof gtag === 'function') gtag('event', 'open_from_homescreen');
 
   /* ===== 初期化 ===== */
   renderHistory();

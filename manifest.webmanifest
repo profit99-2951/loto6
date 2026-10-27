@@ -1,0 +1,16 @@
+{
+  "name": "ロト6 予想ツール|ロト6データラボ",
+  "short_name": "ロト6ラボ",
+  "description": "出目表・ご無沙汰数字・相性分析を見ながら予想番号を作れる無料ツール",
+  "lang": "ja",
+  "start_url": "loto6Lite.html?utm_source=homescreen&utm_medium=pwa&utm_campaign=homescreen",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F8F7F4",
+  "theme_color": "#F8F7F4",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
